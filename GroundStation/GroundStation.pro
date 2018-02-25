@@ -28,7 +28,14 @@ SOURCES += \
         mainwindow.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    datatype.h
 
 FORMS += \
         mainwindow.ui
+
+RESOURCES += \
+    resources.qrc
+
+DISTFILES += \
+    pic/bg-roll.png

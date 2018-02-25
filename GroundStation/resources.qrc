@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>pic/bg-roll.png</file>
+        <file>pic/icon-roll.png</file>
+        <file>pic/icon-pitch.png</file>
+    </qresource>
+</RCC>
