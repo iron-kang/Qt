@@ -27,7 +27,7 @@ private:
     QGraphicsScene *m_scene;
     QGraphicsView *m_view;
     QTcpSocket *m_client;
-    QTimer *tim_info;
+    QTimer *timer_info;
     QPixmap imuPitchPix, imuRollPix;
     QWebEnginePage *m_page;
     QMutex m_sockMutex;
@@ -36,7 +36,7 @@ private:
     char cmd[50];
 
     void UI_Init();
-    void action(char cmd);
+    void action(char cmd, int val);
 
 private slots:
     void getInfo();
@@ -47,6 +47,7 @@ private slots:
     void on_btn_connect_clicked();
     void on_horizontalSlider_sliderMoved(int position);
     void on_btn_up_clicked();
+    void on_btn_down_clicked();
 };
 
 #endif // MAINWINDOW_H

@@ -3,5 +3,10 @@
         <file>pic/bg-roll.png</file>
         <file>pic/icon-roll.png</file>
         <file>pic/icon-pitch.png</file>
+        <file>pic/icon-down.png</file>
+        <file>pic/icon-up.png</file>
+        <file>pic/icon-disconnect.png</file>
+        <file>pic/icon-connect.png</file>
+        <file>pic/bg-roll-2.png</file>
     </qresource>
 </RCC>
