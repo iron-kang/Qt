@@ -8,5 +8,7 @@
         <file>pic/icon-disconnect.png</file>
         <file>pic/icon-connect.png</file>
         <file>pic/bg-roll-2.png</file>
+        <file>pic/icon-drone.png</file>
+        <file>pic/icon-setting.png</file>
     </qresource>
 </RCC>

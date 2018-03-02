@@ -19,304 +19,379 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QWidget" name="map" native="true">
-    <property name="geometry">
-     <rect>
-      <x>766</x>
-      <y>0</y>
-      <width>600</width>
-      <height>600</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="txt_roll">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>570</y>
-      <width>82</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Noto Sans Cuneiform</family>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>roll</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="txt_pitch">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>267</y>
-      <width>82</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Noto Sans Cypriot</family>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>pitch</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="txt_yaw">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>620</y>
-      <width>82</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Noto Sans Coptic</family>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>yaw</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btn_connect">
-    <property name="geometry">
-     <rect>
-      <x>300</x>
-      <y>30</y>
-      <width>100</width>
-      <height>100</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="resources.qrc">
-      <normaloff>:/pic/icon-disconnect.png</normaloff>:/pic/icon-disconnect.png</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>100</width>
-      <height>100</height>
-     </size>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QLabel" name="bg_pitch">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>4</y>
-      <width>256</width>
-      <height>256</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="pixmap">
-     <pixmap resource="resources.qrc">:/pic/bg-roll-2.png</pixmap>
-    </property>
-   </widget>
-   <widget class="QLabel" name="bg_roll">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>310</y>
-      <width>256</width>
-      <height>256</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="pixmap">
-     <pixmap resource="resources.qrc">:/pic/bg-roll-2.png</pixmap>
-    </property>
-   </widget>
-   <widget class="QLabel" name="icon_roll">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>310</y>
-      <width>256</width>
-      <height>256</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="pixmap">
-     <pixmap resource="resources.qrc">:/pic/icon-roll.png</pixmap>
-    </property>
-   </widget>
-   <widget class="QLabel" name="icon_pitch">
+   <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>256</width>
-      <height>256</height>
+      <width>1366</width>
+      <height>768</height>
      </rect>
     </property>
-    <property name="text">
-     <string/>
+    <property name="tabShape">
+     <enum>QTabWidget::Rounded</enum>
     </property>
-    <property name="pixmap">
-     <pixmap resource="resources.qrc">:/pic/icon-pitch.png</pixmap>
-    </property>
-   </widget>
-   <widget class="QSlider" name="horizontalSlider">
-    <property name="geometry">
-     <rect>
-      <x>766</x>
-      <y>610</y>
-      <width>600</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="minimum">
-     <number>1</number>
-    </property>
-    <property name="maximum">
-     <number>21</number>
-    </property>
-    <property name="value">
-     <number>16</number>
-    </property>
-    <property name="sliderPosition">
-     <number>16</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-    <property name="tickPosition">
-     <enum>QSlider::NoTicks</enum>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btn_up">
-    <property name="geometry">
-     <rect>
-      <x>300</x>
-      <y>150</y>
-      <width>100</width>
-      <height>100</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="resources.qrc">
-      <normaloff>:/pic/icon-up.png</normaloff>:/pic/icon-up.png</iconset>
+    <property name="currentIndex">
+     <number>0</number>
     </property>
     <property name="iconSize">
      <size>
-      <width>100</width>
-      <height>100</height>
+      <width>50</width>
+      <height>50</height>
      </size>
     </property>
-    <property name="flat">
-     <bool>true</bool>
+    <property name="elideMode">
+     <enum>Qt::ElideNone</enum>
     </property>
-   </widget>
-   <widget class="QPushButton" name="btn_down">
-    <property name="geometry">
-     <rect>
-      <x>300</x>
-      <y>260</y>
-      <width>100</width>
-      <height>100</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="resources.qrc">
-      <normaloff>:/pic/icon-down.png</normaloff>:/pic/icon-down.png</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>100</width>
-      <height>100</height>
-     </size>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QLabel" name="txt_yaw_2">
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>660</y>
-      <width>82</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Noto Sans Coptic</family>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Height</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="txt_yaw_3">
-    <property name="geometry">
-     <rect>
-      <x>230</x>
-      <y>660</y>
-      <width>82</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Noto Sans Coptic</family>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Battery</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
+    <widget class="QWidget" name="tab_flight">
+     <attribute name="icon">
+      <iconset resource="resources.qrc">
+       <normaloff>:/pic/icon-drone.png</normaloff>:/pic/icon-drone.png</iconset>
+     </attribute>
+     <attribute name="title">
+      <string/>
+     </attribute>
+     <widget class="QLabel" name="txt_yaw_3">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>660</y>
+        <width>82</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Noto Sans Coptic</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Battery</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="txt_pitch">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>267</y>
+        <width>82</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Noto Sans Cypriot</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>pitch</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="bg_roll">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>310</y>
+        <width>256</width>
+        <height>256</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="resources.qrc">:/pic/bg-roll-2.png</pixmap>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_connect">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>10</y>
+        <width>100</width>
+        <height>100</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="resources.qrc">
+        <normaloff>:/pic/icon-disconnect.png</normaloff>:/pic/icon-disconnect.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>100</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="txt_yaw_2">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>660</y>
+        <width>82</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Noto Sans Coptic</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Height</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_up">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>150</y>
+        <width>100</width>
+        <height>100</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="resources.qrc">
+        <normaloff>:/pic/icon-up.png</normaloff>:/pic/icon-up.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>100</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="txt_yaw">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>620</y>
+        <width>82</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Noto Sans Coptic</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>yaw</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="bg_pitch">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>256</width>
+        <height>256</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="resources.qrc">:/pic/bg-roll-2.png</pixmap>
+      </property>
+     </widget>
+     <widget class="QLabel" name="icon_roll">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>310</y>
+        <width>256</width>
+        <height>256</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="resources.qrc">:/pic/icon-roll.png</pixmap>
+      </property>
+     </widget>
+     <widget class="QLabel" name="txt_roll">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>570</y>
+        <width>82</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Noto Sans Cuneiform</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>roll</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_down">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>260</y>
+        <width>100</width>
+        <height>100</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="resources.qrc">
+        <normaloff>:/pic/icon-down.png</normaloff>:/pic/icon-down.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>100</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QWidget" name="map" native="true">
+      <property name="geometry">
+       <rect>
+        <x>766</x>
+        <y>0</y>
+        <width>600</width>
+        <height>600</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QSlider" name="horizontalSlider">
+      <property name="geometry">
+       <rect>
+        <x>766</x>
+        <y>600</y>
+        <width>600</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="minimum">
+       <number>1</number>
+      </property>
+      <property name="maximum">
+       <number>21</number>
+      </property>
+      <property name="value">
+       <number>16</number>
+      </property>
+      <property name="sliderPosition">
+       <number>16</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="tickPosition">
+       <enum>QSlider::NoTicks</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="icon_pitch">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>256</width>
+        <height>256</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="resources.qrc">:/pic/icon-pitch.png</pixmap>
+      </property>
+     </widget>
+     <zorder>bg_pitch</zorder>
+     <zorder>txt_yaw_3</zorder>
+     <zorder>txt_pitch</zorder>
+     <zorder>bg_roll</zorder>
+     <zorder>btn_connect</zorder>
+     <zorder>txt_yaw_2</zorder>
+     <zorder>btn_up</zorder>
+     <zorder>txt_yaw</zorder>
+     <zorder>icon_roll</zorder>
+     <zorder>txt_roll</zorder>
+     <zorder>btn_down</zorder>
+     <zorder>map</zorder>
+     <zorder>horizontalSlider</zorder>
+     <zorder>icon_pitch</zorder>
+    </widget>
+    <widget class="QWidget" name="tab_setting">
+     <attribute name="icon">
+      <iconset resource="resources.qrc">
+       <normaloff>:/pic/icon-setting.png</normaloff>:/pic/icon-setting.png</iconset>
+     </attribute>
+     <attribute name="title">
+      <string/>
+     </attribute>
+     <widget class="GLWidget" name="widget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>400</width>
+        <height>400</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
    </widget>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>GLWidget</class>
+   <extends>QWidget</extends>
+   <header>glwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resources.qrc"/>
  </resources>
