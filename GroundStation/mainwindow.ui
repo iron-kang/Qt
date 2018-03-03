@@ -28,6 +28,9 @@
       <height>768</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
     <property name="tabShape">
      <enum>QTabWidget::Rounded</enum>
     </property>
@@ -369,7 +372,7 @@
      <attribute name="title">
       <string/>
      </attribute>
-     <widget class="GLWidget" name="widget" native="true">
+     <widget class="GLWidget" name="opengl" native="true">
       <property name="geometry">
        <rect>
         <x>0</x>

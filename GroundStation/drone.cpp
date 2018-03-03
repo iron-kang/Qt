@@ -62,13 +62,13 @@ void Drone::DrawUnitCylinder(int numSegs, float topSize, float bottomSize)
     glPopMatrix();
 }
 
-void Drone::DrawDrone(float roll, float pitch, float yaw)
+void Drone::DrawDrone(Axis3f attitude, float *thrust)
 {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glRotatef(roll, 0, 0, 90);
-    glRotatef(yaw, 0, 90, 0);
-    glRotatef(pitch, 90, 0, 0);
+    glRotatef(attitude.x, 0, 0, 90);
+    glRotatef(attitude.z, 0, 90, 0);
+    glRotatef(attitude.y, 90, 0, 0);
 
 
     glPushMatrix();
@@ -92,7 +92,7 @@ void Drone::DrawDrone(float roll, float pitch, float yaw)
     glPopMatrix();
 
     /* Left Forward */
-    DrawThrottle(MOTOR_POS, MOTOR_POS, 0, COLOR{1.0, 0.1, 0.1});
+    DrawThrottle(MOTOR_POS, MOTOR_POS, thrust[LEFT_FORWARD]*0.01, COLOR{1.0, 0.1, 0.1});
     glPushMatrix();
     glColor3f(0.9, 0, 0);
     glTranslatef(MOTOR_POS, 0, MOTOR_POS);
@@ -101,7 +101,7 @@ void Drone::DrawDrone(float roll, float pitch, float yaw)
     glPopMatrix();
 
     /* Right Forward */
-    DrawThrottle(-MOTOR_POS, MOTOR_POS, 0, COLOR{1.0, 0.1, 0.1});
+    DrawThrottle(-MOTOR_POS, MOTOR_POS, thrust[RIGHT_FORWARD]*0.01, COLOR{1.0, 0.1, 0.1});
     glPushMatrix();
     glColor3f(0.9, 0, 0);
     glTranslatef(-MOTOR_POS, 0, MOTOR_POS);
@@ -110,7 +110,7 @@ void Drone::DrawDrone(float roll, float pitch, float yaw)
     glPopMatrix();
 
     /* Right Back */
-    DrawThrottle(-MOTOR_POS, -MOTOR_POS, 0, COLOR{0.1, 1, 0.1});
+    DrawThrottle(-MOTOR_POS, -MOTOR_POS, thrust[RIGHT_BACK]*0.01, COLOR{0.1, 1, 0.1});
     glPushMatrix();
     glColor3f(0, .9, 0);
     glTranslatef(-MOTOR_POS, 0, -MOTOR_POS);
@@ -119,7 +119,7 @@ void Drone::DrawDrone(float roll, float pitch, float yaw)
     glPopMatrix();
 
     /* Left Back */
-    DrawThrottle(MOTOR_POS, -MOTOR_POS, 0, COLOR{0.1, 1, 0.1});
+    DrawThrottle(MOTOR_POS, -MOTOR_POS, thrust[LEFT_BACK]*0.01, COLOR{0.1, 1, 0.1});
     glPushMatrix();
     glColor3f(0, .9, 0);
     glTranslatef(MOTOR_POS, 0, -MOTOR_POS);
@@ -165,7 +165,6 @@ void Drone::DrawDrone(float roll, float pitch, float yaw)
 
 void Drone::DrawThrottle(float x, float z, float thrust, COLOR color)
 {
-    thrust = 1;
     if (thrust < 0.4 || thrust > 1) return;
     glPushMatrix();
     glTranslatef(x, 0.2+(thrust-MIN_THRUST)*2/THRUST_FACTOR*0.4+0.1, z);

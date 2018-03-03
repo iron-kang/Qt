@@ -11,7 +11,10 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent)
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateGL()));
     timer->start(10);
-    roll = 0;
+    m_info.attitude.x = 0;
+    m_info.attitude.y = 0;
+    m_info.attitude.z = 0;
+
 }
 
 void GLWidget::initializeGL()
@@ -38,7 +41,7 @@ void GLWidget::paintGL()
 //    roll += 0.2;
 //    yaw += 0.5;
 //    pitch += 0.5;
-    m_drone.DrawDrone(roll, pitch, yaw);
+    m_drone.DrawDrone(m_info.attitude, m_info.thrust);
 }
 
 void GLWidget::resizeGL(int w, int h)
@@ -75,4 +78,10 @@ void GLWidget::drawCoord()
     glVertex3f(0, 0, height);
     glVertex3f(0, 0, -height);
     glEnd();
+}
+
+void GLWidget::setInfo(Info *info)
+{
+    m_info.attitude = info->attitude;
+    memcpy(m_info.thrust, info->thrust, sizeof(float)*4);
 }

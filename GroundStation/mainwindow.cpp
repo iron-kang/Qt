@@ -4,6 +4,7 @@
 #include <QDebug>
 #include "datatype.h"
 #include <iostream>
+#include "glwidget.h"
 
 using namespace std;
 
@@ -19,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_web = new QWebEngineView(ui->map);
 //    QGraphicsProxyWidget *proxy __attribute__((__unused__)) = m_scene->addWidget(this);
-
+//    this->tabew->setStyleSheet("QDialog{background-color:rgba(10, 10, 10, 100);border: 2px outset cyan;border-radius:3px;}");
     UI_Init();
     m_page = m_web->page();
     m_web->move(-100, 0);
@@ -101,6 +102,7 @@ void MainWindow::readyRead()
     p_imuRoll.drawPixmap(0, 0, imuRollPix);
     ui->icon_roll->setPixmap(mapImuRoll);
 
+    ui->opengl->setInfo(&info);
 }
 
 void MainWindow::connected()

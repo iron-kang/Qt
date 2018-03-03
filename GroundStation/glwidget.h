@@ -3,6 +3,7 @@
 
 #include <QGLWidget>
 #include <drone.h>
+#include <datatype.h>
 
 class GLWidget : public QGLWidget
 {
@@ -13,9 +14,11 @@ public:
     void initializeGL();
     void paintGL();
     void resizeGL(int w, int h);
+    void setInfo(Info *info);
 
 private:
     Drone m_drone;
+    Info m_info;
     float roll, pitch, yaw;
     int width, height;
 
