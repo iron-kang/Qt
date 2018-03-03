@@ -28,13 +28,13 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     glwidget.cpp \
-    modelobj.cpp
+    drone.cpp
 
 HEADERS += \
         mainwindow.h \
     datatype.h \
     glwidget.h \
-    modelobj.h
+    drone.h
 
 FORMS += \
         mainwindow.ui
