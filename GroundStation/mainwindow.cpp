@@ -149,7 +149,7 @@ void MainWindow::on_btn_connect_clicked()
 {
     if (!isConnect)
     {
-        QString ip_address="123.3.2.1";
+        QString ip_address="192.168.123.1";
         m_client->connectToHost(ip_address, 80);
 
 
