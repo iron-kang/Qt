@@ -78,9 +78,18 @@ void MainWindow::readyRead()
     ret = m_client->readAll().data();
     memcpy(&info, ret, sizeof(Info));
 //    printf("roll: %f, pitch: %f, Pitch: %f\n", info.attitude.x, info.attitude.y, info.attitude.z);
-    ui->txt_roll->setText(QString::number(info.attitude.x, 'f', 2));
-    ui->txt_pitch->setText(QString::number(info.attitude.y, 'f', 2));
-    ui->txt_yaw->setText(QString::number(info.attitude.z, 'f', 2));
+    switch (ui->tabWidget->currentIndex()) {
+    case 0:
+        ui->txt_roll->setText(QString::number(info.attitude.x, 'f', 2));
+        ui->txt_pitch->setText(QString::number(info.attitude.y, 'f', 2));
+        ui->txt_yaw->setText(QString::number(info.attitude.z, 'f', 2));
+        break;
+    case 1:
+        ui->val_roll->setText(QString::number(info.attitude.x, 'f', 2));
+        ui->val_pitch->setText(QString::number(info.attitude.y, 'f', 2));
+        ui->val_yaw->setText(QString::number(info.attitude.z, 'f', 2));
+        break;
+    }
 
     QPixmap mapImuPitch(imuPitchPix.size());
     mapImuPitch.fill(Qt::transparent);

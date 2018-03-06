@@ -70,7 +70,6 @@ void Drone::DrawDrone(Axis3f attitude, float *thrust)
     glRotatef(attitude.z, 0, 90, 0);
     glRotatef(attitude.y, 90, 0, 0);
 
-
     glPushMatrix();
     glColor3f(0.3, 0.3, 0.3);
     glScalef(0.5, 0.4, 0.8);
@@ -92,36 +91,36 @@ void Drone::DrawDrone(Axis3f attitude, float *thrust)
     glPopMatrix();
 
     /* Left Forward */
-    DrawThrottle(MOTOR_POS, MOTOR_POS, thrust[LEFT_FORWARD]*0.01, COLOR{1.0, 0.1, 0.1});
+    DrawThrottle(MOTOR_POS, MOTOR_POS, thrust[LEFT_FORWARD]*0.01, COLOR{0.1, 1, 0.1});
     glPushMatrix();
-    glColor3f(0.9, 0, 0);
+    glColor3f(0, 0.9, 0);
     glTranslatef(MOTOR_POS, 0, MOTOR_POS);
     glScalef(.2, .1, .2);
     DrawUnitCylinder(50, 1, .75);
     glPopMatrix();
 
     /* Right Forward */
-    DrawThrottle(-MOTOR_POS, MOTOR_POS, thrust[RIGHT_FORWARD]*0.01, COLOR{1.0, 0.1, 0.1});
+    DrawThrottle(-MOTOR_POS, MOTOR_POS, thrust[RIGHT_FORWARD]*0.01, COLOR{0.1, 1, 0.1});
     glPushMatrix();
-    glColor3f(0.9, 0, 0);
+    glColor3f(0, 0.9, 0);
     glTranslatef(-MOTOR_POS, 0, MOTOR_POS);
     glScalef(.2, .1, .2);
     DrawUnitCylinder(50, 1, .75);
     glPopMatrix();
 
     /* Right Back */
-    DrawThrottle(-MOTOR_POS, -MOTOR_POS, thrust[RIGHT_BACK]*0.01, COLOR{0.1, 1, 0.1});
+    DrawThrottle(-MOTOR_POS, -MOTOR_POS, thrust[RIGHT_BACK]*0.01, COLOR{1, 0.1, 0.1});
     glPushMatrix();
-    glColor3f(0, .9, 0);
+    glColor3f(0.9, 0, 0);
     glTranslatef(-MOTOR_POS, 0, -MOTOR_POS);
     glScalef(.2, .1, .2);
     DrawUnitCylinder(50, 1, .75);
     glPopMatrix();
 
     /* Left Back */
-    DrawThrottle(MOTOR_POS, -MOTOR_POS, thrust[LEFT_BACK]*0.01, COLOR{0.1, 1, 0.1});
+    DrawThrottle(MOTOR_POS, -MOTOR_POS, thrust[LEFT_BACK]*0.01, COLOR{1, 0.1, 0.1});
     glPushMatrix();
-    glColor3f(0, .9, 0);
+    glColor3f(0.9, 0, 0);
     glTranslatef(MOTOR_POS, 0, -MOTOR_POS);
     glScalef(.2, .1, .2);
     DrawUnitCylinder(50, 1, .75);
