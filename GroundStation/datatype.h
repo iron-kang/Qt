@@ -11,9 +11,9 @@ typedef union {
 } Axis3f;
 
 typedef enum {
-    LEFT_FORWARD = 0,
+    LEFT_FRONT = 0,
     LEFT_BACK,
-    RIGHT_FORWARD,
+    RIGHT_FRONT,
     RIGHT_BACK
 } motor_t;
 

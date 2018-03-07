@@ -88,6 +88,11 @@ void MainWindow::readyRead()
         ui->val_roll->setText(QString::number(info.attitude.x, 'f', 2));
         ui->val_pitch->setText(QString::number(info.attitude.y, 'f', 2));
         ui->val_yaw->setText(QString::number(info.attitude.z, 'f', 2));
+
+        ui->val_MLF->setText(QString::number(info.thrust[LEFT_FRONT], 'f', 4));
+        ui->val_MLB->setText(QString::number(info.thrust[LEFT_BACK], 'f', 4));
+        ui->val_MRF->setText(QString::number(info.thrust[RIGHT_FRONT], 'f', 4));
+        ui->val_MRB->setText(QString::number(info.thrust[RIGHT_BACK], 'f', 4));
         break;
     }
 
