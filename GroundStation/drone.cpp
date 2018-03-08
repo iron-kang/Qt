@@ -66,7 +66,7 @@ void Drone::DrawDrone(Axis3f attitude, float *thrust)
 {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glRotatef(attitude.x, 0, 0, 90);
+    glRotatef(-attitude.x, 0, 0, 90);
     glRotatef(attitude.z, 0, 90, 0);
     glRotatef(attitude.y, 90, 0, 0);
 
@@ -90,8 +90,8 @@ void Drone::DrawDrone(Axis3f attitude, float *thrust)
     DrawUnitCylinder(50, 1, 1);
     glPopMatrix();
 
-    /* Left Forward */
-    DrawThrottle(MOTOR_POS, MOTOR_POS, thrust[LEFT_FORWARD]*0.01, COLOR{0.1, 1, 0.1});
+    /* RIGHT BACK */
+    DrawThrottle(MOTOR_POS, MOTOR_POS, thrust[RIGHT_BACK]*0.01, COLOR{0.1, 1, 0.1});
     glPushMatrix();
     glColor3f(0, 0.9, 0);
     glTranslatef(MOTOR_POS, 0, MOTOR_POS);
@@ -99,8 +99,8 @@ void Drone::DrawDrone(Axis3f attitude, float *thrust)
     DrawUnitCylinder(50, 1, .75);
     glPopMatrix();
 
-    /* Right Forward */
-    DrawThrottle(-MOTOR_POS, MOTOR_POS, thrust[RIGHT_FORWARD]*0.01, COLOR{0.1, 1, 0.1});
+    /* LEFT BACK */
+    DrawThrottle(-MOTOR_POS, MOTOR_POS, thrust[LEFT_BACK]*0.01, COLOR{0.1, 1, 0.1});
     glPushMatrix();
     glColor3f(0, 0.9, 0);
     glTranslatef(-MOTOR_POS, 0, MOTOR_POS);
@@ -108,8 +108,8 @@ void Drone::DrawDrone(Axis3f attitude, float *thrust)
     DrawUnitCylinder(50, 1, .75);
     glPopMatrix();
 
-    /* Right Back */
-    DrawThrottle(-MOTOR_POS, -MOTOR_POS, thrust[RIGHT_BACK]*0.01, COLOR{1, 0.1, 0.1});
+    /* LEFT FRONT */
+    DrawThrottle(-MOTOR_POS, -MOTOR_POS, thrust[LEFT_FRONT]*0.01, COLOR{1, 0.1, 0.1});
     glPushMatrix();
     glColor3f(0.9, 0, 0);
     glTranslatef(-MOTOR_POS, 0, -MOTOR_POS);
@@ -117,8 +117,8 @@ void Drone::DrawDrone(Axis3f attitude, float *thrust)
     DrawUnitCylinder(50, 1, .75);
     glPopMatrix();
 
-    /* Left Back */
-    DrawThrottle(MOTOR_POS, -MOTOR_POS, thrust[LEFT_BACK]*0.01, COLOR{1, 0.1, 0.1});
+    /* RIGHT FRONT */
+    DrawThrottle(MOTOR_POS, -MOTOR_POS, thrust[RIGHT_FRONT]*0.01, COLOR{1, 0.1, 0.1});
     glPushMatrix();
     glColor3f(0.9, 0, 0);
     glTranslatef(MOTOR_POS, 0, -MOTOR_POS);
