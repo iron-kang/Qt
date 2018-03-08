@@ -8,6 +8,19 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QMutex>
+#include <QtCharts/QChartGlobal>
+#include <deque>
+#include "datatype.h"
+
+QT_CHARTS_BEGIN_NAMESPACE
+class QChartView;
+class QChart;
+class QLineSeries;
+QT_CHARTS_END_NAMESPACE
+
+QT_CHARTS_USE_NAMESPACE
+
+using namespace std;
 
 namespace Ui {
 class MainWindow;
@@ -31,12 +44,19 @@ private:
     QPixmap imuPitchPix, imuRollPix;
     QWebEnginePage *m_page;
     QMutex m_sockMutex;
+    QChartView *m_chart_roll, *m_chart_pitch;
+    QLineSeries *m_series_roll, *m_series_pitch;
+    Info info;
 
     bool isConnect;
     char cmd[50];
+    deque<float> que_roll;
+    deque<float> que_pitch;
 
     void UI_Init();
     void action(char cmd, int val);
+    void mode_flight();
+    void mode_setting();
 
 private slots:
     void getInfo();

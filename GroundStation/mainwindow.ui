@@ -29,13 +29,13 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true"/>
+     <string notr="true">background-color: rgb(158, 137, 101) </string>
     </property>
     <property name="tabShape">
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="iconSize">
      <size>
@@ -341,6 +341,12 @@
         <width>256</width>
         <height>256</height>
        </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(255, 255, 255, 0) </string>
       </property>
       <property name="text">
        <string/>
@@ -764,6 +770,26 @@
         <string/>
        </property>
       </widget>
+     </widget>
+     <widget class="QWidget" name="chart_roll" native="true">
+      <property name="geometry">
+       <rect>
+        <x>1016</x>
+        <y>0</y>
+        <width>350</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="chart_pitch" native="true">
+      <property name="geometry">
+       <rect>
+        <x>1016</x>
+        <y>250</y>
+        <width>350</width>
+        <height>250</height>
+       </rect>
+      </property>
      </widget>
     </widget>
    </widget>
