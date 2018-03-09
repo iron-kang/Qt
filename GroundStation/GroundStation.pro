@@ -13,13 +13,15 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
         glwidget.cpp \
-        drone.cpp
+        drone.cpp \
+    joysticthread.cpp
 
 HEADERS += \
         mainwindow.h \
         datatype.h \
         glwidget.h \
-        drone.h
+        drone.h \
+    joysticthread.h
 
 FORMS += \
         mainwindow.ui

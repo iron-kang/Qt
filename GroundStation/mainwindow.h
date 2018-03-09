@@ -10,7 +10,9 @@
 #include <QMutex>
 #include <QtCharts/QChartGlobal>
 #include <deque>
+#include <QFileSystemWatcher>
 #include "datatype.h"
+#include "joysticthread.h"
 
 QT_CHARTS_BEGIN_NAMESPACE
 class QChartView;
@@ -41,15 +43,19 @@ private:
     QGraphicsView *m_view;
     QTcpSocket *m_client;
     QTimer *timer_info;
+    QTimer *timer_thrust;
     QPixmap imuPitchPix, imuRollPix;
     QWebEnginePage *m_page;
     QMutex m_sockMutex;
     QChartView *m_chart_roll, *m_chart_pitch;
     QLineSeries *m_series_roll, *m_series_pitch;
     Info info;
+    QFileSystemWatcher *devWatcher;
+    JoysticThread *joysticThread;
 
     bool isConnect;
     char cmd[50];
+    char thrust_val;
     deque<float> que_roll;
     deque<float> que_pitch;
 
@@ -59,11 +65,14 @@ private:
     void mode_setting();
 
 private slots:
+    void thrustHandle(char c, char val);
+    void pollThrust();
     void getInfo();
     void updateMap();
     void readyRead();
     void connected();
     void disConnected();
+    void showModifiedDirectory(QString str);
     void on_btn_connect_clicked();
     void on_horizontalSlider_sliderMoved(int position);
     void on_btn_up_clicked();

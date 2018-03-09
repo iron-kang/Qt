@@ -7,6 +7,7 @@
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
 #include <QBoxLayout>
+#include <QDebug>
 
 #define SAMPLENUM 50
 
@@ -45,6 +46,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QTimer *timer_map = new QTimer(this);
     connect(timer_map, SIGNAL(timeout()), this, SLOT(updateMap()));
 
+    QTimer *timer_thrust = new QTimer(this);
+    connect(timer_thrust, SIGNAL(timeout()), this, SLOT(pollThrust()));
+
 //    m_view->setScene(m_scene);
 //    m_view->showFullScreen();
 //    m_view->setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
@@ -56,6 +60,14 @@ MainWindow::MainWindow(QWidget *parent) :
 //    tim_map->start(2000);
     updateMap();
 
+    devWatcher = new QFileSystemWatcher(this);
+    devWatcher->addPath("/dev/input");
+    connect(devWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(showModifiedDirectory(QString)));
+
+    joysticThread = new JoysticThread(this);
+    connect(joysticThread, SIGNAL(thrustEvent(char, char)), this, SLOT(thrustHandle(char, char)));
+    connect(joysticThread, SIGNAL(connectNet()), this, SLOT(on_btn_connect_clicked()));
+    joysticThread->start();
 
 }
 
@@ -120,6 +132,35 @@ void MainWindow::UI_Init()
     m_chart_pitch->chart()->setTheme(QChart::ChartThemeBrownSand);
     m_chart_pitch->chart()->legend()->hide();
 
+}
+
+void MainWindow::showModifiedDirectory(QString path)
+{
+    joysticThread->device_connect();
+}
+
+void MainWindow::pollThrust()
+{
+    action('B', thrust_val);
+    qDebug()<<"polling: "<<thrust_val<<endl;
+}
+
+void MainWindow::thrustHandle(char c, char val)
+{
+    qDebug()<<"thrust: "<<c<<"("<<val<<")"<<endl;
+    if (c == 'B')
+    {
+#if 0
+        if (!timer_thrust->isActive() && val != 'o')
+        {
+            thrust_val = val;
+            timer_thrust->start(1000);
+        }
+        else if (val == 'o')
+            timer_thrust->stop();
+#endif
+    }
+    action(c, (int)val);
 }
 
 void MainWindow::readyRead()
@@ -199,8 +240,6 @@ void MainWindow::mode_flight()
     p_imuRoll.translate(-128, -128);
     p_imuRoll.drawPixmap(0, 0, imuRollPix);
     ui->icon_roll->setPixmap(mapImuRoll);
-
-
 }
 
 void MainWindow::connected()

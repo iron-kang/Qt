@@ -3,7 +3,6 @@
 #include <GL/glut.h>
 #include <QTimer>
 
-
 using namespace std;
 
 GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent)
