@@ -67,7 +67,7 @@ MainWindow::MainWindow(QWidget *parent) :
     joysticThread = new JoysticThread(this);
     connect(joysticThread, SIGNAL(thrustEvent(char, char)), this, SLOT(thrustHandle(char, char)));
     connect(joysticThread, SIGNAL(connectNet()), this, SLOT(on_btn_connect_clicked()));
-//    joysticThread->start();
+    qDebug()<<"info size: "<<sizeof(Info);
 
 }
 
@@ -171,14 +171,34 @@ void MainWindow::readyRead()
     char *ret;
 
     ret = m_client->readAll().data();
-    memcpy(&info, ret, sizeof(Info));
-    if (que_roll.size() == SAMPLENUM)
-    {
-        que_roll.pop_front();
-        que_pitch.pop_front();
+
+    switch(ret[0]) {
+    case 'A':
+        memcpy(&info, &ret[1], sizeof(Info));
+        if (que_roll.size() == SAMPLENUM)
+        {
+            que_roll.pop_front();
+            que_pitch.pop_front();
+        }
+        que_roll.push_back(info.attitude.x);
+        que_pitch.push_back(info.attitude.y);
+        break;
+    case 'a':
+        memcpy(&pid_attitude, &ret[1], sizeof(PidParam));
+        memcpy(&pid_rate, &ret[1+sizeof(PidParam)], sizeof(PidParam));
+//        memcpy(pid_para, &ret[1], sizeof(float)*PID_NUM);
+//        for (int i = 0; i < PID_NUM; i++)
+//            printf("%f\n", pid_para[i]);
+        update_PID();
+        break;
+    default:
+        qDebug()<<"head: "<<ret[0];
+        memcpy(&pid_attitude, &ret[5], sizeof(PidParam));
+        memcpy(&pid_rate, &ret[5+sizeof(PidParam)], sizeof(PidParam));
+        update_PID();
+        break;
     }
-    que_roll.push_back(info.attitude.x);
-    que_pitch.push_back(info.attitude.y);
+
 //    printf("roll: %f, pitch: %f, Pitch: %f\n", info.attitude.x, info.attitude.y, info.attitude.z);
     switch (ui->tabWidget->currentIndex()) {
     case MODE_FLIGTH:
@@ -204,25 +224,6 @@ void MainWindow::mode_setting()
     ui->val_MRF->setText(QString::number(info.thrust[RIGHT_FRONT], 'f', 4));
     ui->val_MRB->setText(QString::number(info.thrust[RIGHT_BACK], 'f', 4));
 
-    ui->ed_att_roll_kp->setText(QString::number(info.pid_attitude.roll[KP], 'f', 4));
-    ui->ed_att_roll_ki->setText(QString::number(info.pid_attitude.roll[KI], 'f', 4));
-    ui->ed_att_roll_kd->setText(QString::number(info.pid_attitude.roll[KD], 'f', 4));
-    ui->ed_att_pitch_kp->setText(QString::number(info.pid_attitude.pitch[KP], 'f', 4));
-    ui->ed_att_pitch_ki->setText(QString::number(info.pid_attitude.pitch[KI], 'f', 4));
-    ui->ed_att_pitch_kd->setText(QString::number(info.pid_attitude.pitch[KD], 'f', 4));
-    ui->ed_att_yaw_kp->setText(QString::number(info.pid_attitude.yaw[KP], 'f', 4));
-    ui->ed_att_yaw_ki->setText(QString::number(info.pid_attitude.yaw[KI], 'f', 4));
-    ui->ed_att_yaw_kd->setText(QString::number(info.pid_attitude.yaw[KD], 'f', 4));
-
-    ui->ed_rat_roll_kp->setText(QString::number(info.pid_rate.roll[KP], 'f', 4));
-    ui->ed_rat_roll_ki->setText(QString::number(info.pid_rate.roll[KI], 'f', 4));
-    ui->ed_rat_roll_kd->setText(QString::number(info.pid_rate.roll[KD], 'f', 4));
-    ui->ed_rat_pitch_kp->setText(QString::number(info.pid_rate.pitch[KP], 'f', 4));
-    ui->ed_rat_pitch_ki->setText(QString::number(info.pid_rate.pitch[KI], 'f', 4));
-    ui->ed_rat_pitch_kd->setText(QString::number(info.pid_rate.pitch[KD], 'f', 4));
-    ui->ed_rat_yaw_kp->setText(QString::number(info.pid_rate.yaw[KP], 'f', 4));
-    ui->ed_rat_yaw_ki->setText(QString::number(info.pid_rate.yaw[KI], 'f', 4));
-    ui->ed_rat_yaw_kd->setText(QString::number(info.pid_rate.yaw[KD], 'f', 4));
 
     for (int i = 0; i < (int)que_roll.size(); i++)
     {
@@ -263,6 +264,52 @@ void MainWindow::mode_flight()
     p_imuRoll.translate(-128, -128);
     p_imuRoll.drawPixmap(0, 0, imuRollPix);
     ui->icon_roll->setPixmap(mapImuRoll);
+}
+
+void MainWindow::update_PID()
+{
+#if 1
+    ui->ed_att_roll_kp->setText(QString::number(pid_attitude.roll[KP], 'f', 5));
+    ui->ed_att_roll_ki->setText(QString::number(pid_attitude.roll[KI], 'f', 5));
+    ui->ed_att_roll_kd->setText(QString::number(pid_attitude.roll[KD], 'f', 5));
+    ui->ed_att_pitch_kp->setText(QString::number(pid_attitude.pitch[KP], 'f', 5));
+    ui->ed_att_pitch_ki->setText(QString::number(pid_attitude.pitch[KI], 'f', 5));
+    ui->ed_att_pitch_kd->setText(QString::number(pid_attitude.pitch[KD], 'f', 5));
+    ui->ed_att_yaw_kp->setText(QString::number(pid_attitude.yaw[KP], 'f', 5));
+    ui->ed_att_yaw_ki->setText(QString::number(pid_attitude.yaw[KI], 'f', 5));
+    ui->ed_att_yaw_kd->setText(QString::number(pid_attitude.yaw[KD], 'f', 5));
+
+    ui->ed_rat_roll_kp->setText(QString::number(pid_rate.roll[KP], 'f', 5));
+    ui->ed_rat_roll_ki->setText(QString::number(pid_rate.roll[KI], 'f', 5));
+    ui->ed_rat_roll_kd->setText(QString::number(pid_rate.roll[KD], 'f', 5));
+    ui->ed_rat_pitch_kp->setText(QString::number(pid_rate.pitch[KP], 'f', 5));
+    ui->ed_rat_pitch_ki->setText(QString::number(pid_rate.pitch[KI], 'f', 5));
+    ui->ed_rat_pitch_kd->setText(QString::number(pid_rate.pitch[KD], 'f', 5));
+    ui->ed_rat_yaw_kp->setText(QString::number(pid_rate.yaw[KP], 'f', 5));
+    ui->ed_rat_yaw_ki->setText(QString::number(pid_rate.yaw[KI], 'f', 5));
+    ui->ed_rat_yaw_kd->setText(QString::number(pid_rate.yaw[KD], 'f', 5));
+#endif
+#if 0
+    ui->ed_att_roll_kp->setText(QString::number(pid_para[PID_ROLL_KP], 'f', 5));
+    ui->ed_att_roll_ki->setText(QString::number(pid_para[PID_ROLL_KI], 'f', 5));
+    ui->ed_att_roll_kd->setText(QString::number(pid_para[PID_ROLL_KD], 'f', 5));
+    ui->ed_att_pitch_kp->setText(QString::number(pid_para[PID_PITCH_KP], 'f', 5));
+    ui->ed_att_pitch_ki->setText(QString::number(pid_para[PID_PITCH_KI], 'f', 5));
+    ui->ed_att_pitch_kd->setText(QString::number(pid_para[PID_PITCH_KD], 'f', 5));
+    ui->ed_att_yaw_kp->setText(QString::number(pid_para[PID_YAW_KP], 'f', 5));
+    ui->ed_att_yaw_ki->setText(QString::number(pid_para[PID_YAW_KI], 'f', 5));
+    ui->ed_att_yaw_kd->setText(QString::number(pid_para[PID_YAW_KD], 'f', 5));
+
+    ui->ed_rat_roll_kp->setText(QString::number(pid_para[PID_ROLL_RATE_KP], 'f', 5));
+    ui->ed_rat_roll_ki->setText(QString::number(pid_para[PID_ROLL_RATE_KI], 'f', 5));
+    ui->ed_rat_roll_kd->setText(QString::number(pid_para[PID_ROLL_RATE_KD], 'f', 5));
+    ui->ed_rat_pitch_kp->setText(QString::number(pid_para[PID_PITCH_RATE_KP], 'f', 5));
+    ui->ed_rat_pitch_ki->setText(QString::number(pid_para[PID_PITCH_RATE_KI], 'f', 5));
+    ui->ed_rat_pitch_kd->setText(QString::number(pid_para[PID_PITCH_RATE_KD], 'f', 5));
+    ui->ed_rat_yaw_kp->setText(QString::number(pid_para[PID_YAW_RATE_KP], 'f', 5));
+    ui->ed_rat_yaw_ki->setText(QString::number(pid_para[PID_YAW_RATE_KI], 'f', 5));
+    ui->ed_rat_yaw_kd->setText(QString::number(pid_para[PID_YAW_RATE_KD], 'f', 5));
+#endif
 }
 
 void MainWindow::connected()
@@ -311,9 +358,8 @@ void MainWindow::on_btn_connect_clicked()
     {
         QString ip_address="192.168.123.1";
         m_client->connectToHost(ip_address, 80);
-
-
         timer_info->start(100);
+        action('a', 0);
     }
     else {
 

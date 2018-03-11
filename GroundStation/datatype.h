@@ -1,6 +1,8 @@
 #ifndef DATATYPE_H
 #define DATATYPE_H
 
+#define PID_NUM 18
+
 typedef enum {
     LEFT_FRONT = 0,
     LEFT_BACK,
@@ -12,6 +14,27 @@ typedef enum {
     MODE_FLIGTH = 0,
     MODE_SETTING,
 } uimode;
+
+typedef enum {
+    PID_ROLL_KP = 0,
+    PID_ROLL_KI,
+    PID_ROLL_KD,
+    PID_PITCH_KP,
+    PID_PITCH_KI,
+    PID_PITCH_KD,
+    PID_YAW_KP,
+    PID_YAW_KI,
+    PID_YAW_KD,
+    PID_ROLL_RATE_KP,
+    PID_ROLL_RATE_KI,
+    PID_ROLL_RATE_KD,
+    PID_PITCH_RATE_KP,
+    PID_PITCH_RATE_KI,
+    PID_PITCH_RATE_KD,
+    PID_YAW_RATE_KP,
+    PID_YAW_RATE_KI,
+    PID_YAW_RATE_KD,
+} PID_PARA_t;
 
 typedef union {
   struct {
@@ -41,8 +64,6 @@ typedef enum {
 }PID_ID;
 
 typedef struct _info {
-    PidParam pid_attitude;
-    PidParam pid_rate;
     AXIS attitude;
     float thrust[4];
 }Info;

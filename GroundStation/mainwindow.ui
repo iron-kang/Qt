@@ -972,14 +972,14 @@
         <rect>
          <x>90</x>
          <y>60</y>
-         <width>61</width>
+         <width>63</width>
          <height>26</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Monospace</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1004,14 +1004,14 @@ border-color: rgb(215, 156, 98);</string>
         <rect>
          <x>170</x>
          <y>60</y>
-         <width>61</width>
+         <width>63</width>
          <height>26</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Monospace</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1036,14 +1036,14 @@ border-color: rgb(215, 156, 98);</string>
         <rect>
          <x>250</x>
          <y>60</y>
-         <width>61</width>
+         <width>63</width>
          <height>26</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Monospace</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1068,14 +1068,14 @@ border-color: rgb(215, 156, 98);</string>
         <rect>
          <x>170</x>
          <y>100</y>
-         <width>61</width>
+         <width>63</width>
          <height>26</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Monospace</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1100,14 +1100,14 @@ border-color: rgb(215, 156, 98);</string>
         <rect>
          <x>90</x>
          <y>100</y>
-         <width>61</width>
+         <width>63</width>
          <height>26</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Monospace</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1132,14 +1132,14 @@ border-color: rgb(215, 156, 98);</string>
         <rect>
          <x>250</x>
          <y>100</y>
-         <width>61</width>
+         <width>63</width>
          <height>26</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Monospace</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1164,14 +1164,14 @@ border-color: rgb(215, 156, 98);</string>
         <rect>
          <x>250</x>
          <y>140</y>
-         <width>61</width>
+         <width>63</width>
          <height>26</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Monospace</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1196,14 +1196,14 @@ border-color: rgb(215, 156, 98);</string>
         <rect>
          <x>170</x>
          <y>140</y>
-         <width>61</width>
+         <width>63</width>
          <height>26</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Monospace</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1228,14 +1228,14 @@ border-color: rgb(215, 156, 98);</string>
         <rect>
          <x>90</x>
          <y>140</y>
-         <width>61</width>
+         <width>63</width>
          <height>26</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Monospace</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1427,14 +1427,14 @@ border-color: rgb(215, 156, 98);</string>
         <rect>
          <x>250</x>
          <y>60</y>
-         <width>61</width>
+         <width>63</width>
          <height>26</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Monospace</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1459,14 +1459,14 @@ border-color: rgb(215, 156, 98);</string>
         <rect>
          <x>170</x>
          <y>60</y>
-         <width>61</width>
+         <width>63</width>
          <height>26</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Monospace</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1491,14 +1491,14 @@ border-color: rgb(215, 156, 98);</string>
         <rect>
          <x>90</x>
          <y>60</y>
-         <width>61</width>
+         <width>63</width>
          <height>26</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Monospace</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1523,14 +1523,14 @@ border-color: rgb(215, 156, 98);</string>
         <rect>
          <x>250</x>
          <y>100</y>
-         <width>61</width>
+         <width>63</width>
          <height>26</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Monospace</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1555,14 +1555,14 @@ border-color: rgb(215, 156, 98);</string>
         <rect>
          <x>170</x>
          <y>100</y>
-         <width>61</width>
+         <width>63</width>
          <height>26</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Monospace</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1587,14 +1587,14 @@ border-color: rgb(215, 156, 98);</string>
         <rect>
          <x>90</x>
          <y>100</y>
-         <width>61</width>
+         <width>63</width>
          <height>26</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Monospace</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1619,14 +1619,14 @@ border-color: rgb(215, 156, 98);</string>
         <rect>
          <x>90</x>
          <y>140</y>
-         <width>61</width>
+         <width>63</width>
          <height>26</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Monospace</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1651,14 +1651,14 @@ border-color: rgb(215, 156, 98);</string>
         <rect>
          <x>170</x>
          <y>140</y>
-         <width>61</width>
+         <width>63</width>
          <height>26</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Monospace</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1683,14 +1683,14 @@ border-color: rgb(215, 156, 98);</string>
         <rect>
          <x>250</x>
          <y>140</y>
-         <width>61</width>
+         <width>63</width>
          <height>26</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>Monospace</family>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>

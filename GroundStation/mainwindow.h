@@ -52,10 +52,13 @@ private:
     Info info;
     QFileSystemWatcher *devWatcher;
     JoysticThread *joysticThread;
+    PidParam pid_attitude;
+    PidParam pid_rate;
 
     bool isConnect;
     char cmd[50];
     char thrust_val;
+    float pid_para[PID_NUM];
     deque<float> que_roll;
     deque<float> que_pitch;
 
@@ -63,6 +66,7 @@ private:
     void action(char cmd, int val);
     void mode_flight();
     void mode_setting();
+    void update_PID();
 
 private slots:
     void thrustHandle(char c, char val);
