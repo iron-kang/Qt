@@ -8,23 +8,12 @@
 #include <unistd.h>
 #include "ui_mainwindow.h"
 
-enum JOYSTICK_STAT {
-    HORI_R = 0,
-    HORI_L,
-    HORI_C,
-    VERT_T,
-    VERT_B,
-    VERT_C
-};
-
-class JoysticThread : public QThread
+class JoysticThread : public QObject
 {
     Q_OBJECT
 public:
     explicit JoysticThread(QObject *parent = 0);
-    void run();
     void device_connect();
-    bool active;
 
     ~JoysticThread();
 
@@ -37,6 +26,9 @@ private:
 signals:
     void thrustEvent(char c, char val);
     void connectNet();
+
+private slots:
+    void readJoyStickData();
 
 };
 

@@ -62,7 +62,7 @@ void Drone::DrawUnitCylinder(int numSegs, float topSize, float bottomSize)
     glPopMatrix();
 }
 
-void Drone::DrawDrone(Axis3f attitude, float *thrust)
+void Drone::DrawDrone(AXIS attitude, float *thrust)
 {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();

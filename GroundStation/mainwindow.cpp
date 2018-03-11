@@ -46,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QTimer *timer_map = new QTimer(this);
     connect(timer_map, SIGNAL(timeout()), this, SLOT(updateMap()));
 
-    QTimer *timer_thrust = new QTimer(this);
+    timer_thrust = new QTimer(this);
     connect(timer_thrust, SIGNAL(timeout()), this, SLOT(pollThrust()));
 
 //    m_view->setScene(m_scene);
@@ -67,7 +67,7 @@ MainWindow::MainWindow(QWidget *parent) :
     joysticThread = new JoysticThread(this);
     connect(joysticThread, SIGNAL(thrustEvent(char, char)), this, SLOT(thrustHandle(char, char)));
     connect(joysticThread, SIGNAL(connectNet()), this, SLOT(on_btn_connect_clicked()));
-    joysticThread->start();
+//    joysticThread->start();
 
 }
 
@@ -76,15 +76,16 @@ MainWindow::~MainWindow()
     cout<<"deconstruct"<<endl;
     m_client->disconnectFromHost();
     m_client->close();
+
     delete m_client;
     delete ui;
 }
 
 void MainWindow::UI_Init()
 {
-    ui->txt_pitch->setStyleSheet("QLabel {color:rgb(255, 128, 0);background-color:rgba(0, 0, 0, 0)}");
-    ui->txt_roll->setStyleSheet("QLabel {color:rgb(255, 128, 0);background-color:rgba(0, 0, 0, 0)}");
-    ui->txt_yaw->setStyleSheet("QLabel {color:rgb(255, 128, 0);background-color:rgba(0, 0, 0, 0)}");
+    ui->txt_pitch->setStyleSheet("QLabel {color:rgb(255, 255, 255);background-color:rgba(0, 0, 0, 0)}");
+    ui->txt_roll->setStyleSheet("QLabel {color:rgb(255, 255, 255);background-color:rgba(0, 0, 0, 0)}");
+    ui->txt_yaw->setStyleSheet("QLabel {color:rgb(255, 255, 255);background-color:rgba(0, 0, 0, 0)}");
 
     QChart *chart = new QChart();
     chart->setTitle("Roll");
@@ -142,19 +143,21 @@ void MainWindow::showModifiedDirectory(QString path)
 void MainWindow::pollThrust()
 {
     action('B', thrust_val);
-    qDebug()<<"polling: "<<thrust_val<<endl;
+
 }
 
 void MainWindow::thrustHandle(char c, char val)
 {
-    qDebug()<<"thrust: "<<c<<"("<<val<<")"<<endl;
+    if (!isConnect) return;
+    qDebug()<<"thrust: "<<c<<"("<<isConnect<<")"<<endl;
     if (c == 'B')
     {
-#if 0
+#if 1
         if (!timer_thrust->isActive() && val != 'o')
         {
+            qDebug()<<"start thrust timer.."<<isConnect;
             thrust_val = val;
-            timer_thrust->start(1000);
+            timer_thrust->start(500);
         }
         else if (val == 'o')
             timer_thrust->stop();
@@ -191,7 +194,7 @@ void MainWindow::readyRead()
 void MainWindow::mode_setting()
 {
     QPointF p;
-
+//    qDebug()<<info.attitude.x<<", "<<info.attitude.y<<", "<<info.attitude.z;
     ui->val_roll->setText(QString::number(info.attitude.x, 'f', 2));
     ui->val_pitch->setText(QString::number(info.attitude.y, 'f', 2));
     ui->val_yaw->setText(QString::number(info.attitude.z, 'f', 2));
@@ -200,6 +203,26 @@ void MainWindow::mode_setting()
     ui->val_MLB->setText(QString::number(info.thrust[LEFT_BACK], 'f', 4));
     ui->val_MRF->setText(QString::number(info.thrust[RIGHT_FRONT], 'f', 4));
     ui->val_MRB->setText(QString::number(info.thrust[RIGHT_BACK], 'f', 4));
+
+    ui->ed_att_roll_kp->setText(QString::number(info.pid_attitude.roll[KP], 'f', 4));
+    ui->ed_att_roll_ki->setText(QString::number(info.pid_attitude.roll[KI], 'f', 4));
+    ui->ed_att_roll_kd->setText(QString::number(info.pid_attitude.roll[KD], 'f', 4));
+    ui->ed_att_pitch_kp->setText(QString::number(info.pid_attitude.pitch[KP], 'f', 4));
+    ui->ed_att_pitch_ki->setText(QString::number(info.pid_attitude.pitch[KI], 'f', 4));
+    ui->ed_att_pitch_kd->setText(QString::number(info.pid_attitude.pitch[KD], 'f', 4));
+    ui->ed_att_yaw_kp->setText(QString::number(info.pid_attitude.yaw[KP], 'f', 4));
+    ui->ed_att_yaw_ki->setText(QString::number(info.pid_attitude.yaw[KI], 'f', 4));
+    ui->ed_att_yaw_kd->setText(QString::number(info.pid_attitude.yaw[KD], 'f', 4));
+
+    ui->ed_rat_roll_kp->setText(QString::number(info.pid_rate.roll[KP], 'f', 4));
+    ui->ed_rat_roll_ki->setText(QString::number(info.pid_rate.roll[KI], 'f', 4));
+    ui->ed_rat_roll_kd->setText(QString::number(info.pid_rate.roll[KD], 'f', 4));
+    ui->ed_rat_pitch_kp->setText(QString::number(info.pid_rate.pitch[KP], 'f', 4));
+    ui->ed_rat_pitch_ki->setText(QString::number(info.pid_rate.pitch[KI], 'f', 4));
+    ui->ed_rat_pitch_kd->setText(QString::number(info.pid_rate.pitch[KD], 'f', 4));
+    ui->ed_rat_yaw_kp->setText(QString::number(info.pid_rate.yaw[KP], 'f', 4));
+    ui->ed_rat_yaw_ki->setText(QString::number(info.pid_rate.yaw[KI], 'f', 4));
+    ui->ed_rat_yaw_kd->setText(QString::number(info.pid_rate.yaw[KD], 'f', 4));
 
     for (int i = 0; i < (int)que_roll.size(); i++)
     {

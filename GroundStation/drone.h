@@ -15,7 +15,7 @@ class Drone
 public:
     Drone();
     void DrawUnitCylinder(int numSegs, float topSize, float bottomSize);
-    void DrawDrone(Axis3f attitude, float *thrust);
+    void DrawDrone(AXIS attitude, float *thrust);
 
 private:
     void DrawThrottle(float x, float z, float thrust, COLOR color);

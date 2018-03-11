@@ -22,8 +22,28 @@ typedef union {
   float axis[3];
 } Axis3f;
 
+typedef struct {
+    float x;
+    float y;
+    float z;
+} AXIS;
+
+typedef struct {
+    float roll[3];
+    float pitch[3];
+    float yaw[3];
+} PidParam;
+
+typedef enum {
+    KP = 0,
+    KI,
+    KD
+}PID_ID;
+
 typedef struct _info {
-    Axis3f attitude;
+    PidParam pid_attitude;
+    PidParam pid_rate;
+    AXIS attitude;
     float thrust[4];
 }Info;
 
