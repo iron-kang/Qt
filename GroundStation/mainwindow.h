@@ -56,9 +56,8 @@ private:
     PidParam pid_rate;
 
     bool isConnect;
-    char cmd[50];
+    char cmd[100];
     char thrust_val;
-    float pid_para[PID_NUM];
     deque<float> que_roll;
     deque<float> que_pitch;
 
@@ -70,6 +69,7 @@ private:
 
 private slots:
     void thrustHandle(char c, char val);
+    void updatePID();
     void pollThrust();
     void getInfo();
     void updateMap();

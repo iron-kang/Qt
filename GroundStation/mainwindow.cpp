@@ -67,8 +67,8 @@ MainWindow::MainWindow(QWidget *parent) :
     joysticThread = new JoysticThread(this);
     connect(joysticThread, SIGNAL(thrustEvent(char, char)), this, SLOT(thrustHandle(char, char)));
     connect(joysticThread, SIGNAL(connectNet()), this, SLOT(on_btn_connect_clicked()));
-    qDebug()<<"info size: "<<sizeof(Info);
 
+    connect(ui->btn_setpid, SIGNAL(clicked()), this, SLOT(updatePID()));
 }
 
 MainWindow::~MainWindow()
@@ -149,7 +149,7 @@ void MainWindow::pollThrust()
 void MainWindow::thrustHandle(char c, char val)
 {
     if (!isConnect) return;
-    qDebug()<<"thrust: "<<c<<"("<<isConnect<<")"<<endl;
+
     if (c == 'B')
     {
 #if 1
@@ -168,13 +168,15 @@ void MainWindow::thrustHandle(char c, char val)
 
 void MainWindow::readyRead()
 {
-    char *ret;
+//    char *ret;
+    char buf[100];
 
-    ret = m_client->readAll().data();
+    //ret = m_client->readAll().data();
+    m_client->read(buf, 100);
 
-    switch(ret[0]) {
+    switch(buf[0]) {
     case 'A':
-        memcpy(&info, &ret[1], sizeof(Info));
+        memcpy(&info, &buf[1], sizeof(Info));
         if (que_roll.size() == SAMPLENUM)
         {
             que_roll.pop_front();
@@ -184,18 +186,12 @@ void MainWindow::readyRead()
         que_pitch.push_back(info.attitude.y);
         break;
     case 'a':
-        memcpy(&pid_attitude, &ret[1], sizeof(PidParam));
-        memcpy(&pid_rate, &ret[1+sizeof(PidParam)], sizeof(PidParam));
-//        memcpy(pid_para, &ret[1], sizeof(float)*PID_NUM);
-//        for (int i = 0; i < PID_NUM; i++)
-//            printf("%f\n", pid_para[i]);
+        memcpy(&pid_attitude, &buf[1], sizeof(PidParam));
+        memcpy(&pid_rate, &buf[1+sizeof(PidParam)], sizeof(PidParam));
         update_PID();
         break;
     default:
-        qDebug()<<"head: "<<ret[0];
-        memcpy(&pid_attitude, &ret[5], sizeof(PidParam));
-        memcpy(&pid_rate, &ret[5+sizeof(PidParam)], sizeof(PidParam));
-        update_PID();
+        qDebug()<<"head: "<<buf[0];
         break;
     }
 
@@ -268,7 +264,6 @@ void MainWindow::mode_flight()
 
 void MainWindow::update_PID()
 {
-#if 1
     ui->ed_att_roll_kp->setText(QString::number(pid_attitude.roll[KP], 'f', 5));
     ui->ed_att_roll_ki->setText(QString::number(pid_attitude.roll[KI], 'f', 5));
     ui->ed_att_roll_kd->setText(QString::number(pid_attitude.roll[KD], 'f', 5));
@@ -288,28 +283,6 @@ void MainWindow::update_PID()
     ui->ed_rat_yaw_kp->setText(QString::number(pid_rate.yaw[KP], 'f', 5));
     ui->ed_rat_yaw_ki->setText(QString::number(pid_rate.yaw[KI], 'f', 5));
     ui->ed_rat_yaw_kd->setText(QString::number(pid_rate.yaw[KD], 'f', 5));
-#endif
-#if 0
-    ui->ed_att_roll_kp->setText(QString::number(pid_para[PID_ROLL_KP], 'f', 5));
-    ui->ed_att_roll_ki->setText(QString::number(pid_para[PID_ROLL_KI], 'f', 5));
-    ui->ed_att_roll_kd->setText(QString::number(pid_para[PID_ROLL_KD], 'f', 5));
-    ui->ed_att_pitch_kp->setText(QString::number(pid_para[PID_PITCH_KP], 'f', 5));
-    ui->ed_att_pitch_ki->setText(QString::number(pid_para[PID_PITCH_KI], 'f', 5));
-    ui->ed_att_pitch_kd->setText(QString::number(pid_para[PID_PITCH_KD], 'f', 5));
-    ui->ed_att_yaw_kp->setText(QString::number(pid_para[PID_YAW_KP], 'f', 5));
-    ui->ed_att_yaw_ki->setText(QString::number(pid_para[PID_YAW_KI], 'f', 5));
-    ui->ed_att_yaw_kd->setText(QString::number(pid_para[PID_YAW_KD], 'f', 5));
-
-    ui->ed_rat_roll_kp->setText(QString::number(pid_para[PID_ROLL_RATE_KP], 'f', 5));
-    ui->ed_rat_roll_ki->setText(QString::number(pid_para[PID_ROLL_RATE_KI], 'f', 5));
-    ui->ed_rat_roll_kd->setText(QString::number(pid_para[PID_ROLL_RATE_KD], 'f', 5));
-    ui->ed_rat_pitch_kp->setText(QString::number(pid_para[PID_PITCH_RATE_KP], 'f', 5));
-    ui->ed_rat_pitch_ki->setText(QString::number(pid_para[PID_PITCH_RATE_KI], 'f', 5));
-    ui->ed_rat_pitch_kd->setText(QString::number(pid_para[PID_PITCH_RATE_KD], 'f', 5));
-    ui->ed_rat_yaw_kp->setText(QString::number(pid_para[PID_YAW_RATE_KP], 'f', 5));
-    ui->ed_rat_yaw_ki->setText(QString::number(pid_para[PID_YAW_RATE_KI], 'f', 5));
-    ui->ed_rat_yaw_kd->setText(QString::number(pid_para[PID_YAW_RATE_KD], 'f', 5));
-#endif
 }
 
 void MainWindow::connected()
@@ -332,6 +305,38 @@ void MainWindow::updateMap()
                                      "&size=600x600&maptype=roadmap"
                                    "&markers=color:red%7Clabel:H%7C22.6004779,120.3127385"
                                    "&key=AIzaSyBc8rZgqD1Q4S84lPYuHpyoaQNMl0Bw4Tk")));
+}
+
+void MainWindow::updatePID()
+{
+    m_sockMutex.lock();
+    cmd[0] = '@';
+    cmd[1] = '#';
+    cmd[2] = 'C';
+
+    pid_attitude.roll[KP] = atof(ui->ed_att_roll_kp->text().toStdString().c_str());
+    pid_attitude.roll[KI] = atof(ui->ed_att_roll_ki->text().toStdString().c_str());
+    pid_attitude.roll[KD] = atof(ui->ed_att_roll_kd->text().toStdString().c_str());
+    pid_attitude.pitch[KP] = atof(ui->ed_att_pitch_kp->text().toStdString().c_str());
+    pid_attitude.pitch[KI] = atof(ui->ed_att_pitch_ki->text().toStdString().c_str());
+    pid_attitude.pitch[KD] = atof(ui->ed_att_pitch_kd->text().toStdString().c_str());
+    pid_attitude.yaw[KP] = atof(ui->ed_att_yaw_kp->text().toStdString().c_str());
+    pid_attitude.yaw[KI] = atof(ui->ed_att_yaw_ki->text().toStdString().c_str());
+    pid_attitude.yaw[KD] = atof(ui->ed_att_yaw_kd->text().toStdString().c_str());
+
+    pid_rate.roll[KP] = atof(ui->ed_rat_roll_kp->text().toStdString().c_str());
+    pid_rate.roll[KI] = atof(ui->ed_rat_roll_ki->text().toStdString().c_str());
+    pid_rate.roll[KD] = atof(ui->ed_rat_roll_kd->text().toStdString().c_str());
+    pid_rate.pitch[KP] = atof(ui->ed_rat_pitch_kp->text().toStdString().c_str());
+    pid_rate.pitch[KI] = atof(ui->ed_rat_pitch_ki->text().toStdString().c_str());
+    pid_rate.pitch[KD] = atof(ui->ed_rat_pitch_kd->text().toStdString().c_str());
+    pid_rate.yaw[KP] = atof(ui->ed_rat_yaw_kp->text().toStdString().c_str());
+    pid_rate.yaw[KI] = atof(ui->ed_rat_yaw_ki->text().toStdString().c_str());
+    pid_rate.yaw[KD] = atof(ui->ed_rat_yaw_kd->text().toStdString().c_str());
+
+    m_client->write(cmd, 3+sizeof(PidParam)*2);
+    m_client->waitForBytesWritten();
+    m_sockMutex.unlock();
 }
 
 void MainWindow::action(char act, int val)
