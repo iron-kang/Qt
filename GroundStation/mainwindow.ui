@@ -532,6 +532,9 @@
        <property name="text">
         <string>-</string>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
       </widget>
       <widget class="QLabel" name="val_MRF">
        <property name="geometry">
@@ -555,6 +558,9 @@
        </property>
        <property name="text">
         <string>-</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
       <widget class="QLabel" name="val_MRB">
@@ -580,6 +586,9 @@
        <property name="text">
         <string>-</string>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
       </widget>
       <widget class="QLabel" name="val_MLB">
        <property name="geometry">
@@ -603,6 +612,9 @@
        </property>
        <property name="text">
         <string>-</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </widget>
@@ -633,7 +645,7 @@
         <rect>
          <x>90</x>
          <y>120</y>
-         <width>61</width>
+         <width>71</width>
          <height>21</height>
         </rect>
        </property>
@@ -650,6 +662,9 @@
        </property>
        <property name="text">
         <string>-</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
       <widget class="QLabel" name="val_roll">
@@ -657,7 +672,7 @@
         <rect>
          <x>90</x>
          <y>40</y>
-         <width>61</width>
+         <width>71</width>
          <height>21</height>
         </rect>
        </property>
@@ -674,6 +689,9 @@
        </property>
        <property name="text">
         <string>-</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
       <widget class="QLabel" name="label_pitch">
@@ -754,7 +772,7 @@
         <rect>
          <x>90</x>
          <y>80</y>
-         <width>61</width>
+         <width>71</width>
          <height>21</height>
         </rect>
        </property>
@@ -771,6 +789,9 @@
        </property>
        <property name="text">
         <string>-</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </widget>
@@ -1727,13 +1748,56 @@ border-color: rgb(215, 156, 98);</string>
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">color:rgb(135, 87, 38);
-border-style: solid;
-border-width: 2px;
-border-color: rgb(215, 156, 98);</string>
+       <string notr="true">color:rgb(135, 87, 38);</string>
       </property>
       <property name="text">
        <string>Set</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="default">
+       <bool>false</bool>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_reboot">
+      <property name="geometry">
+       <rect>
+        <x>790</x>
+        <y>390</y>
+        <width>89</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color:rgb(135, 87, 38);</string>
+      </property>
+      <property name="text">
+       <string>Reboot</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="default">
+       <bool>false</bool>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
       </property>
      </widget>
     </widget>

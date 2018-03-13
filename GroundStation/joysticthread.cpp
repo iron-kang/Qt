@@ -95,6 +95,7 @@ void JoysticThread::readJoyStickData()
                         break;
                     case BTN_MODE:
                         qDebug()<<"BTN_MODE";
+                        emit js_motorLock();
                         break;
                     case BTN_SELECT:
                         qDebug()<<"BTN_SELECT";

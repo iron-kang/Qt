@@ -56,6 +56,7 @@ private:
     PidParam pid_rate;
 
     bool isConnect;
+    bool islock;
     char cmd[100];
     char thrust_val;
     deque<float> que_roll;
@@ -69,7 +70,9 @@ private:
 
 private slots:
     void thrustHandle(char c, char val);
+    void lockMotor();
     void updatePID();
+    void rebootUAV();
     void pollThrust();
     void getInfo();
     void updateMap();

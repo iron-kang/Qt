@@ -67,8 +67,12 @@ MainWindow::MainWindow(QWidget *parent) :
     joysticThread = new JoysticThread(this);
     connect(joysticThread, SIGNAL(thrustEvent(char, char)), this, SLOT(thrustHandle(char, char)));
     connect(joysticThread, SIGNAL(connectNet()), this, SLOT(on_btn_connect_clicked()));
+    connect(joysticThread, SIGNAL(js_motorLock()), this, SLOT(lockMotor()));
 
     connect(ui->btn_setpid, SIGNAL(clicked()), this, SLOT(updatePID()));
+    connect(ui->btn_reboot, SIGNAL(clicked()), this, SLOT(rebootUAV()));
+
+    islock = false;
 }
 
 MainWindow::~MainWindow()
@@ -135,6 +139,17 @@ void MainWindow::UI_Init()
 
 }
 
+void MainWindow::lockMotor()
+{
+    if (!islock)
+
+        action('d', 0);
+    else
+        action('D', 0);
+
+    islock = !islock;
+}
+
 void MainWindow::showModifiedDirectory(QString path)
 {
     joysticThread->device_connect();
@@ -148,7 +163,7 @@ void MainWindow::pollThrust()
 
 void MainWindow::thrustHandle(char c, char val)
 {
-    if (!isConnect) return;
+    if (!isConnect || !islock) return;
 
     if (c == 'B')
     {
@@ -215,10 +230,10 @@ void MainWindow::mode_setting()
     ui->val_pitch->setText(QString::number(info.attitude.y, 'f', 2));
     ui->val_yaw->setText(QString::number(info.attitude.z, 'f', 2));
 
-    ui->val_MLF->setText(QString::number(info.thrust[LEFT_FRONT], 'f', 4));
-    ui->val_MLB->setText(QString::number(info.thrust[LEFT_BACK], 'f', 4));
-    ui->val_MRF->setText(QString::number(info.thrust[RIGHT_FRONT], 'f', 4));
-    ui->val_MRB->setText(QString::number(info.thrust[RIGHT_BACK], 'f', 4));
+    ui->val_MLF->setText(QString::number(info.thrust[LEFT_FRONT], 'f', 3));
+    ui->val_MLB->setText(QString::number(info.thrust[LEFT_BACK], 'f', 3));
+    ui->val_MRF->setText(QString::number(info.thrust[RIGHT_FRONT], 'f', 3));
+    ui->val_MRB->setText(QString::number(info.thrust[RIGHT_BACK], 'f', 3));
 
 
     for (int i = 0; i < (int)que_roll.size(); i++)
@@ -299,6 +314,13 @@ void MainWindow::disConnected()
     printf("disconnect\n");
 }
 
+void MainWindow::rebootUAV()
+{
+    action('c', 0);
+    m_client->disconnected();
+    m_client->close();
+}
+
 void MainWindow::updateMap()
 {
     m_page->load(QUrl(QStringLiteral("https://maps.googleapis.com/maps/api/staticmap?center=22.6004779,120.3127385&zoom=16"
@@ -309,6 +331,8 @@ void MainWindow::updateMap()
 
 void MainWindow::updatePID()
 {
+    if (!isConnect) return;
+
     m_sockMutex.lock();
     cmd[0] = '@';
     cmd[1] = '#';
@@ -323,6 +347,7 @@ void MainWindow::updatePID()
     pid_attitude.yaw[KP] = atof(ui->ed_att_yaw_kp->text().toStdString().c_str());
     pid_attitude.yaw[KI] = atof(ui->ed_att_yaw_ki->text().toStdString().c_str());
     pid_attitude.yaw[KD] = atof(ui->ed_att_yaw_kd->text().toStdString().c_str());
+    memcpy(&cmd[3], &pid_attitude, sizeof(PidParam));
 
     pid_rate.roll[KP] = atof(ui->ed_rat_roll_kp->text().toStdString().c_str());
     pid_rate.roll[KI] = atof(ui->ed_rat_roll_ki->text().toStdString().c_str());
@@ -333,10 +358,13 @@ void MainWindow::updatePID()
     pid_rate.yaw[KP] = atof(ui->ed_rat_yaw_kp->text().toStdString().c_str());
     pid_rate.yaw[KI] = atof(ui->ed_rat_yaw_ki->text().toStdString().c_str());
     pid_rate.yaw[KD] = atof(ui->ed_rat_yaw_kd->text().toStdString().c_str());
+    memcpy(&cmd[3+sizeof(PidParam)], &pid_rate, sizeof(PidParam));
 
     m_client->write(cmd, 3+sizeof(PidParam)*2);
     m_client->waitForBytesWritten();
     m_sockMutex.unlock();
+
+    action('a', 0);
 }
 
 void MainWindow::action(char act, int val)
@@ -365,6 +393,7 @@ void MainWindow::on_btn_connect_clicked()
         m_client->connectToHost(ip_address, 80);
         timer_info->start(100);
         action('a', 0);
+        islock = false;
     }
     else {
 
