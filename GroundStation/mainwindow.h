@@ -71,6 +71,7 @@ private:
 private slots:
     void thrustHandle(char c, char val);
     void lockMotor();
+    void stopMotor();
     void updatePID();
     void rebootUAV();
     void pollThrust();

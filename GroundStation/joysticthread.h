@@ -27,6 +27,8 @@ signals:
     void thrustEvent(char c, char val);
     void connectNet();
     void js_motorLock();
+    void js_reboot();
+    void js_stop();
 
 private slots:
     void readJoyStickData();

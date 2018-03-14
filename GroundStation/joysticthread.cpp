@@ -99,6 +99,7 @@ void JoysticThread::readJoyStickData()
                         break;
                     case BTN_SELECT:
                         qDebug()<<"BTN_SELECT";
+                        emit js_reboot();
                         break;
                     case BTN_START:
                         qDebug()<<"BTN_START";
@@ -109,6 +110,7 @@ void JoysticThread::readJoyStickData()
                         break;
                     case BTN_TR:
                         qDebug()<<"BTN_TR";
+                        emit js_stop();
                         break;
                     case BTN_THUMBR:
                         qDebug()<<"BTN_THUMBR";

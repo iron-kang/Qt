@@ -68,11 +68,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(joysticThread, SIGNAL(thrustEvent(char, char)), this, SLOT(thrustHandle(char, char)));
     connect(joysticThread, SIGNAL(connectNet()), this, SLOT(on_btn_connect_clicked()));
     connect(joysticThread, SIGNAL(js_motorLock()), this, SLOT(lockMotor()));
+    connect(joysticThread, SIGNAL(js_reboot()), this, SLOT(rebootUAV()));
+    connect(joysticThread, SIGNAL(js_stop()), this, SLOT(stopMotor()));
 
     connect(ui->btn_setpid, SIGNAL(clicked()), this, SLOT(updatePID()));
     connect(ui->btn_reboot, SIGNAL(clicked()), this, SLOT(rebootUAV()));
 
-    islock = false;
+    islock = true;
 }
 
 MainWindow::~MainWindow()
@@ -139,15 +141,24 @@ void MainWindow::UI_Init()
 
 }
 
+void MainWindow::stopMotor()
+{
+    action('D', 0);
+    islock = true;
+    if (timer_thrust->isActive())
+        timer_thrust->stop();
+}
+
 void MainWindow::lockMotor()
 {
-    if (!islock)
+//    if (!islock)
 
         action('d', 0);
-    else
-        action('D', 0);
+//    else
+//        action('D', 0);
 
-    islock = !islock;
+//    islock = !islock;
+        islock = false;
 }
 
 void MainWindow::showModifiedDirectory(QString path)
@@ -163,7 +174,7 @@ void MainWindow::pollThrust()
 
 void MainWindow::thrustHandle(char c, char val)
 {
-    if (!isConnect || !islock) return;
+    if (!isConnect || islock) return;
 
     if (c == 'B')
     {
