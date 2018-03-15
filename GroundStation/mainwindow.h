@@ -41,12 +41,12 @@ private:
     QWebEngineView *m_web;
     QGraphicsScene *m_scene;
     QGraphicsView *m_view;
-    QTcpSocket *m_client;
+    QTcpSocket *m_infoSock, *m_cmdSock;
     QTimer *timer_info;
     QTimer *timer_thrust;
     QPixmap imuPitchPix, imuRollPix;
     QWebEnginePage *m_page;
-    QMutex m_sockMutex;
+    QMutex m_InfoSockMutex, m_CmdSockMutex;
     QChartView *m_chart_roll, *m_chart_pitch;
     QLineSeries *m_series_roll, *m_series_pitch;
     Info info;
@@ -57,13 +57,15 @@ private:
 
     bool isConnect;
     bool islock;
-    char cmd[100];
+    char buf_info[100];
+    char buf_cmd[100];
     char thrust_val;
     deque<float> que_roll;
     deque<float> que_pitch;
 
     void UI_Init();
     void action(char cmd, int val);
+    void command(char act, int val);
     void mode_flight();
     void mode_setting();
     void update_PID();

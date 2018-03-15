@@ -132,15 +132,15 @@ void JoysticThread::readJoyStickData()
             case ABS_X:
                 temp_x = ev[i].value-X_CENTER;
 
-//                    qDebug()<<"x: "<<temp_x;
+                    qDebug()<<"x: "<<temp_x;
                 break;
             case ABS_Y:
                 temp_y = ev[i].value-Y_CENTER;
 
-                if (temp_y < 0) emit thrustEvent('B', '+');
-                else if (temp_y > 0) emit thrustEvent('B', '-');
+                if (temp_y == -32767) emit thrustEvent('B', '+');
+                else if (temp_y == 32768) emit thrustEvent('B', '-');
                 else emit thrustEvent('B', 'o');
-//                    qDebug()<<"y: "<<temp_y;
+                    qDebug()<<"y: "<<temp_y;
                 break;
             case ABS_RX:
                 temp_x = ev[i].value-RX_CENTER;

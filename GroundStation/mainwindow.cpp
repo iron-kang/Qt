@@ -31,10 +31,12 @@ MainWindow::MainWindow(QWidget *parent) :
     m_web->move(-100, 0);
 //    page->load(QUrl(QStringLiteral("https://maps.google.com")));
 
-    m_client = new QTcpSocket(this);
-    connect(m_client,SIGNAL(readyRead()),this,SLOT(readyRead()));
-    connect(m_client,SIGNAL(connected()),this,SLOT(connected()));
-    connect(m_client,SIGNAL(disconnected()),this,SLOT(disConnected()));
+    m_infoSock = new QTcpSocket(this);
+    connect(m_infoSock,SIGNAL(readyRead()),this,SLOT(readyRead()));
+    connect(m_infoSock,SIGNAL(connected()),this,SLOT(connected()));
+    connect(m_infoSock,SIGNAL(disconnected()),this,SLOT(disConnected()));
+
+    m_cmdSock = new QTcpSocket(this);
 
     imuPitchPix = QPixmap(*ui->icon_pitch->pixmap());
     imuRollPix = QPixmap(*ui->icon_roll->pixmap());
@@ -55,7 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //    m_view->setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
 
 //    QString ip_address="192.168.1.1";
-//    m_client->connectToHost(ip_address, 80);
+//    m_infoSock->connectToHost(ip_address, 80);
 //    timer_info->start(100);
 //    tim_map->start(2000);
     updateMap();
@@ -80,10 +82,13 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     cout<<"deconstruct"<<endl;
-    m_client->disconnectFromHost();
-    m_client->close();
+    m_infoSock->disconnectFromHost();
+    m_infoSock->close();
+    m_cmdSock->disconnectFromHost();
+    m_cmdSock->close();
 
-    delete m_client;
+    delete m_infoSock;
+    delete m_cmdSock;
     delete ui;
 }
 
@@ -143,7 +148,7 @@ void MainWindow::UI_Init()
 
 void MainWindow::stopMotor()
 {
-    action('D', 0);
+    command('D', 0);
     islock = true;
     if (timer_thrust->isActive())
         timer_thrust->stop();
@@ -153,7 +158,7 @@ void MainWindow::lockMotor()
 {
 //    if (!islock)
 
-        action('d', 0);
+        command('d', 0);
 //    else
 //        action('D', 0);
 
@@ -168,7 +173,7 @@ void MainWindow::showModifiedDirectory(QString path)
 
 void MainWindow::pollThrust()
 {
-    action('B', thrust_val);
+    command('B', thrust_val);
 
 }
 
@@ -189,7 +194,8 @@ void MainWindow::thrustHandle(char c, char val)
             timer_thrust->stop();
 #endif
     }
-    action(c, (int)val);
+    qDebug()<<c<<": "<<val;
+//    command(c, (int)val);
 }
 
 void MainWindow::readyRead()
@@ -197,8 +203,8 @@ void MainWindow::readyRead()
 //    char *ret;
     char buf[100];
 
-    //ret = m_client->readAll().data();
-    m_client->read(buf, 100);
+    //ret = m_infoSock->readAll().data();
+    m_infoSock->read(buf, 100);
 
     switch(buf[0]) {
     case 'A':
@@ -327,9 +333,12 @@ void MainWindow::disConnected()
 
 void MainWindow::rebootUAV()
 {
-    action('c', 0);
-    m_client->disconnected();
-    m_client->close();
+    command('c', 0);
+    timer_info->stop();
+    m_infoSock->disconnected();
+    m_infoSock->close();
+    m_cmdSock->disconnected();
+    m_cmdSock->close();
 }
 
 void MainWindow::updateMap()
@@ -344,10 +353,10 @@ void MainWindow::updatePID()
 {
     if (!isConnect) return;
 
-    m_sockMutex.lock();
-    cmd[0] = '@';
-    cmd[1] = '#';
-    cmd[2] = 'C';
+    m_InfoSockMutex.lock();
+    buf_info[0] = '@';
+    buf_info[1] = '#';
+    buf_info[2] = 'C';
 
     pid_attitude.roll[KP] = atof(ui->ed_att_roll_kp->text().toStdString().c_str());
     pid_attitude.roll[KI] = atof(ui->ed_att_roll_ki->text().toStdString().c_str());
@@ -358,7 +367,7 @@ void MainWindow::updatePID()
     pid_attitude.yaw[KP] = atof(ui->ed_att_yaw_kp->text().toStdString().c_str());
     pid_attitude.yaw[KI] = atof(ui->ed_att_yaw_ki->text().toStdString().c_str());
     pid_attitude.yaw[KD] = atof(ui->ed_att_yaw_kd->text().toStdString().c_str());
-    memcpy(&cmd[3], &pid_attitude, sizeof(PidParam));
+    memcpy(&buf_info[3], &pid_attitude, sizeof(PidParam));
 
     pid_rate.roll[KP] = atof(ui->ed_rat_roll_kp->text().toStdString().c_str());
     pid_rate.roll[KI] = atof(ui->ed_rat_roll_ki->text().toStdString().c_str());
@@ -369,26 +378,40 @@ void MainWindow::updatePID()
     pid_rate.yaw[KP] = atof(ui->ed_rat_yaw_kp->text().toStdString().c_str());
     pid_rate.yaw[KI] = atof(ui->ed_rat_yaw_ki->text().toStdString().c_str());
     pid_rate.yaw[KD] = atof(ui->ed_rat_yaw_kd->text().toStdString().c_str());
-    memcpy(&cmd[3+sizeof(PidParam)], &pid_rate, sizeof(PidParam));
+    memcpy(&buf_info[3+sizeof(PidParam)], &pid_rate, sizeof(PidParam));
 
-    m_client->write(cmd, 3+sizeof(PidParam)*2);
-    m_client->waitForBytesWritten();
-    m_sockMutex.unlock();
+    m_infoSock->write(buf_info, 3+sizeof(PidParam)*2);
+    m_infoSock->waitForBytesWritten();
+    m_InfoSockMutex.unlock();
 
     action('a', 0);
 }
 
 void MainWindow::action(char act, int val)
 {
-    m_sockMutex.lock();
-    cmd[0] = '@';
-    cmd[1] = '#';
-    cmd[2] = act;
-    cmd[3] = val;
+    m_InfoSockMutex.lock();
+    buf_info[0] = '@';
+    buf_info[1] = '#';
+    buf_info[2] = act;
+    buf_info[3] = val;
 
-    m_client->write(cmd, 4);
-    m_client->waitForBytesWritten();
-    m_sockMutex.unlock();
+    m_infoSock->write(buf_info, 4);
+    m_infoSock->waitForBytesWritten();
+    m_InfoSockMutex.unlock();
+}
+
+
+void MainWindow::command(char act, int val)
+{
+    m_CmdSockMutex.lock();
+    buf_cmd[0] = '@';
+    buf_cmd[1] = '#';
+    buf_cmd[2] = act;
+    buf_cmd[3] = val;
+
+    m_cmdSock->write(buf_cmd, 4);
+    m_cmdSock->waitForBytesWritten();
+    m_CmdSockMutex.unlock();
 }
 
 void MainWindow::getInfo()
@@ -401,7 +424,8 @@ void MainWindow::on_btn_connect_clicked()
     if (!isConnect)
     {
         QString ip_address="192.168.123.1";
-        m_client->connectToHost(ip_address, 80);
+        m_infoSock->connectToHost(ip_address, 80);
+        m_cmdSock->connectToHost(ip_address, 80);
         timer_info->start(100);
         action('a', 0);
         islock = false;
@@ -409,8 +433,10 @@ void MainWindow::on_btn_connect_clicked()
     else {
 
         timer_info->stop();
-        m_client->disconnected();
-        m_client->close();
+        m_infoSock->disconnected();
+        m_infoSock->close();
+        m_cmdSock->disconnected();
+        m_cmdSock->close();
 
     }
 }
@@ -428,10 +454,10 @@ void MainWindow::on_horizontalSlider_sliderMoved(int position)
 
 void MainWindow::on_btn_up_clicked()
 {
-    action('a', '+');
+    command('B', '+');
 }
 
 void MainWindow::on_btn_down_clicked()
 {
-    action('a', '-');
+    action('B', '-');
 }
