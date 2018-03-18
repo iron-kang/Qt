@@ -296,25 +296,25 @@ void MainWindow::mode_flight()
 
 void MainWindow::update_PID()
 {
-    ui->ed_att_roll_kp->setText(QString::number(pid_attitude.roll[KP], 'f', 5));
-    ui->ed_att_roll_ki->setText(QString::number(pid_attitude.roll[KI], 'f', 5));
-    ui->ed_att_roll_kd->setText(QString::number(pid_attitude.roll[KD], 'f', 5));
-    ui->ed_att_pitch_kp->setText(QString::number(pid_attitude.pitch[KP], 'f', 5));
-    ui->ed_att_pitch_ki->setText(QString::number(pid_attitude.pitch[KI], 'f', 5));
-    ui->ed_att_pitch_kd->setText(QString::number(pid_attitude.pitch[KD], 'f', 5));
-    ui->ed_att_yaw_kp->setText(QString::number(pid_attitude.yaw[KP], 'f', 5));
-    ui->ed_att_yaw_ki->setText(QString::number(pid_attitude.yaw[KI], 'f', 5));
-    ui->ed_att_yaw_kd->setText(QString::number(pid_attitude.yaw[KD], 'f', 5));
+    ui->ed_att_roll_kp->setText(QString::number(pid_attitude.roll[KP], 'f', 3));
+    ui->ed_att_roll_ki->setText(QString::number(pid_attitude.roll[KI], 'f', 3));
+    ui->ed_att_roll_kd->setText(QString::number(pid_attitude.roll[KD], 'f', 3));
+    ui->ed_att_pitch_kp->setText(QString::number(pid_attitude.pitch[KP], 'f', 3));
+    ui->ed_att_pitch_ki->setText(QString::number(pid_attitude.pitch[KI], 'f', 3));
+    ui->ed_att_pitch_kd->setText(QString::number(pid_attitude.pitch[KD], 'f', 3));
+    ui->ed_att_yaw_kp->setText(QString::number(pid_attitude.yaw[KP], 'f', 3));
+    ui->ed_att_yaw_ki->setText(QString::number(pid_attitude.yaw[KI], 'f', 3));
+    ui->ed_att_yaw_kd->setText(QString::number(pid_attitude.yaw[KD], 'f', 3));
 
-    ui->ed_rat_roll_kp->setText(QString::number(pid_rate.roll[KP], 'f', 5));
-    ui->ed_rat_roll_ki->setText(QString::number(pid_rate.roll[KI], 'f', 5));
-    ui->ed_rat_roll_kd->setText(QString::number(pid_rate.roll[KD], 'f', 5));
-    ui->ed_rat_pitch_kp->setText(QString::number(pid_rate.pitch[KP], 'f', 5));
-    ui->ed_rat_pitch_ki->setText(QString::number(pid_rate.pitch[KI], 'f', 5));
-    ui->ed_rat_pitch_kd->setText(QString::number(pid_rate.pitch[KD], 'f', 5));
-    ui->ed_rat_yaw_kp->setText(QString::number(pid_rate.yaw[KP], 'f', 5));
-    ui->ed_rat_yaw_ki->setText(QString::number(pid_rate.yaw[KI], 'f', 5));
-    ui->ed_rat_yaw_kd->setText(QString::number(pid_rate.yaw[KD], 'f', 5));
+    ui->ed_rat_roll_kp->setText(QString::number(pid_rate.roll[KP], 'f', 3));
+    ui->ed_rat_roll_ki->setText(QString::number(pid_rate.roll[KI], 'f', 3));
+    ui->ed_rat_roll_kd->setText(QString::number(pid_rate.roll[KD], 'f', 3));
+    ui->ed_rat_pitch_kp->setText(QString::number(pid_rate.pitch[KP], 'f', 3));
+    ui->ed_rat_pitch_ki->setText(QString::number(pid_rate.pitch[KI], 'f', 3));
+    ui->ed_rat_pitch_kd->setText(QString::number(pid_rate.pitch[KD], 'f', 3));
+    ui->ed_rat_yaw_kp->setText(QString::number(pid_rate.yaw[KP], 'f', 3));
+    ui->ed_rat_yaw_ki->setText(QString::number(pid_rate.yaw[KI], 'f', 3));
+    ui->ed_rat_yaw_kd->setText(QString::number(pid_rate.yaw[KD], 'f', 3));
 }
 
 void MainWindow::connected()
@@ -344,7 +344,7 @@ void MainWindow::rebootUAV()
 void MainWindow::updateMap()
 {
     m_page->load(QUrl(QStringLiteral("https://maps.googleapis.com/maps/api/staticmap?center=22.6004779,120.3127385&zoom=16"
-                                     "&size=600x600&maptype=roadmap"
+                                     "&size=600x600&maptype=hybrid"//roadmap"
                                    "&markers=color:red%7Clabel:H%7C22.6004779,120.3127385"
                                    "&key=AIzaSyBc8rZgqD1Q4S84lPYuHpyoaQNMl0Bw4Tk")));
 }

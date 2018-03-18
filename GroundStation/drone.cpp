@@ -166,12 +166,14 @@ void Drone::DrawThrottle(float x, float z, float thrust, COLOR color)
 {
     if (thrust < 0.4 || thrust > 1) return;
     glPushMatrix();
-    glTranslatef(x, 0.2+(thrust-MIN_THRUST)*2/THRUST_FACTOR*0.4+0.1, z);
-    glColor3f(color.r*thrust, color.g*thrust, color.b*thrust);
-    glScalef(.2, .2, .2);
-    DrawUnitCylinder(4, .01, 1);
-    glTranslatef(0, -(1+(thrust-MIN_THRUST)*2/THRUST_FACTOR), 0);
-    glScalef(.4, (thrust-MIN_THRUST)*2/THRUST_FACTOR, .4);
+//    glTranslatef(x, 0.2+(thrust-MIN_THRUST)*2/THRUST_FACTOR*0.4+0.1, z);
+    glTranslatef(x, 0.1, z);
+    glColor3f(color.r*thrust*0.9, color.g*thrust*0.9, color.b*thrust);
+//    glScalef(.2, .05, .2);
+//    DrawUnitCylinder(4, .01, 1);
+//    glTranslatef(0, -(1+(thrust-MIN_THRUST)*2/THRUST_FACTOR), 0);
+//    glScalef(.4, (thrust-MIN_THRUST)*2/THRUST_FACTOR, .4);
+    glScalef(thrust*0.2/MIN_THRUST, 0.02, thrust*0.2/MIN_THRUST);
     DrawUnitCylinder(40, 1, 1);
     glPopMatrix();
 }
