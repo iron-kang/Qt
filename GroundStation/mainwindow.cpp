@@ -266,6 +266,7 @@ void MainWindow::mode_setting()
     }
 
     ui->opengl->setInfo(&info);
+    ui->val_bat->setText(QString::number(info.bat, 'f', 1));
 }
 
 void MainWindow::mode_flight()
