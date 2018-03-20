@@ -97,6 +97,7 @@ void MainWindow::UI_Init()
     ui->txt_pitch->setStyleSheet("QLabel {color:rgb(255, 255, 255);background-color:rgba(0, 0, 0, 0)}");
     ui->txt_roll->setStyleSheet("QLabel {color:rgb(255, 255, 255);background-color:rgba(0, 0, 0, 0)}");
     ui->txt_yaw->setStyleSheet("QLabel {color:rgb(255, 255, 255);background-color:rgba(0, 0, 0, 0)}");
+    ui->txt_bat->setStyleSheet("QLabel {color:rgb(255, 255, 255);background-color:rgba(0, 0, 0, 0)}");
 
     QChart *chart = new QChart();
     chart->setTitle("Roll");
@@ -272,6 +273,7 @@ void MainWindow::mode_flight()
     ui->txt_roll->setText(QString::number(info.attitude.x, 'f', 2));
     ui->txt_pitch->setText(QString::number(info.attitude.y, 'f', 2));
     ui->txt_yaw->setText(QString::number(info.attitude.z, 'f', 2));
+    ui->txt_bat->setText(QString::number(info.bat, 'f', 1));
 
     QPixmap mapImuPitch(imuPitchPix.size());
     mapImuPitch.fill(Qt::transparent);
@@ -446,7 +448,7 @@ void MainWindow::on_horizontalSlider_sliderMoved(int position)
     char cmd[500];
     sprintf(cmd,
     "https://maps.googleapis.com/maps/api/staticmap?center=22.6004779,120.3127385&zoom=%d"
-                                         "&size=600x600&maptype=roadmap"
+                                         "&size=600x600&maptype=hybrid"
                                        "&markers=color:red%%7Clabel:H%%7C22.6004779,120.3127385"
                                        "&key=AIzaSyBc8rZgqD1Q4S84lPYuHpyoaQNMl0Bw4Tk", position);
     m_page->load(QUrl(QString(cmd)));

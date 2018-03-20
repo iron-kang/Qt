@@ -93,7 +93,7 @@ void Drone::DrawDrone(AXIS attitude, float *thrust)
     /* RIGHT BACK */
     DrawThrottle(MOTOR_POS, MOTOR_POS, thrust[RIGHT_BACK]*0.01, COLOR{0.1, 1, 0.1});
     glPushMatrix();
-    glColor3f(0, 0.9, 0);
+    glColor3f(0, 0.7, 0);
     glTranslatef(MOTOR_POS, 0, MOTOR_POS);
     glScalef(.2, .1, .2);
     DrawUnitCylinder(50, 1, .75);
@@ -102,7 +102,7 @@ void Drone::DrawDrone(AXIS attitude, float *thrust)
     /* LEFT BACK */
     DrawThrottle(-MOTOR_POS, MOTOR_POS, thrust[LEFT_BACK]*0.01, COLOR{0.1, 1, 0.1});
     glPushMatrix();
-    glColor3f(0, 0.9, 0);
+    glColor3f(0, 0.7, 0);
     glTranslatef(-MOTOR_POS, 0, MOTOR_POS);
     glScalef(.2, .1, .2);
     DrawUnitCylinder(50, 1, .75);
@@ -111,7 +111,7 @@ void Drone::DrawDrone(AXIS attitude, float *thrust)
     /* LEFT FRONT */
     DrawThrottle(-MOTOR_POS, -MOTOR_POS, thrust[LEFT_FRONT]*0.01, COLOR{1, 0.1, 0.1});
     glPushMatrix();
-    glColor3f(0.9, 0, 0);
+    glColor3f(0.7, 0, 0);
     glTranslatef(-MOTOR_POS, 0, -MOTOR_POS);
     glScalef(.2, .1, .2);
     DrawUnitCylinder(50, 1, .75);
@@ -120,7 +120,7 @@ void Drone::DrawDrone(AXIS attitude, float *thrust)
     /* RIGHT FRONT */
     DrawThrottle(MOTOR_POS, -MOTOR_POS, thrust[RIGHT_FRONT]*0.01, COLOR{1, 0.1, 0.1});
     glPushMatrix();
-    glColor3f(0.9, 0, 0);
+    glColor3f(0.7, 0, 0);
     glTranslatef(MOTOR_POS, 0, -MOTOR_POS);
     glScalef(.2, .1, .2);
     DrawUnitCylinder(50, 1, .75);
@@ -168,12 +168,12 @@ void Drone::DrawThrottle(float x, float z, float thrust, COLOR color)
     glPushMatrix();
 //    glTranslatef(x, 0.2+(thrust-MIN_THRUST)*2/THRUST_FACTOR*0.4+0.1, z);
     glTranslatef(x, 0.1, z);
-    glColor3f(color.r*thrust*0.9, color.g*thrust*0.9, color.b*thrust);
+    glColor3f(color.r*thrust, color.g*thrust, color.b*thrust);
 //    glScalef(.2, .05, .2);
 //    DrawUnitCylinder(4, .01, 1);
 //    glTranslatef(0, -(1+(thrust-MIN_THRUST)*2/THRUST_FACTOR), 0);
 //    glScalef(.4, (thrust-MIN_THRUST)*2/THRUST_FACTOR, .4);
-    glScalef(thrust*0.2/MIN_THRUST, 0.02, thrust*0.2/MIN_THRUST);
+    glScalef(thrust*0.2*1.2/MIN_THRUST, 0.03, thrust*0.2*1.2/MIN_THRUST);
     DrawUnitCylinder(40, 1, 1);
     glPopMatrix();
 }

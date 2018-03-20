@@ -66,6 +66,7 @@ typedef enum {
 typedef struct _info {
     AXIS attitude;
     float thrust[4];
+    float bat;
 }Info;
 
 #endif // DATATYPE_H
