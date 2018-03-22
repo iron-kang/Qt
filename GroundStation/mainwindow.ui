@@ -35,7 +35,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="iconSize">
      <size>
@@ -358,6 +358,29 @@
        <pixmap resource="resources.qrc">:/pic/icon-pitch.png</pixmap>
       </property>
      </widget>
+     <widget class="QLabel" name="txt_status">
+      <property name="geometry">
+       <rect>
+        <x>490</x>
+        <y>90</y>
+        <width>191</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Noto Sans Coptic</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Status</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      </property>
+     </widget>
      <zorder>bg_pitch</zorder>
      <zorder>txt_bat</zorder>
      <zorder>txt_pitch</zorder>
@@ -372,6 +395,7 @@
      <zorder>map</zorder>
      <zorder>horizontalSlider</zorder>
      <zorder>icon_pitch</zorder>
+     <zorder>txt_status</zorder>
     </widget>
     <widget class="QWidget" name="tab_setting">
      <attribute name="icon">

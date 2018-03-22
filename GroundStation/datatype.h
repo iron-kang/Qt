@@ -1,6 +1,8 @@
 #ifndef DATATYPE_H
 #define DATATYPE_H
 
+#include <stdint.h>
+
 #define PID_NUM 18
 
 typedef enum {
@@ -63,10 +65,16 @@ typedef enum {
     KD
 }PID_ID;
 
+enum {
+    STATUS_BAT = 0,
+    STATUS_IMU
+};
+
 typedef struct _info {
     AXIS attitude;
     float thrust[4];
     float bat;
+    uint8_t status;
 }Info;
 
 #endif // DATATYPE_H

@@ -13,6 +13,11 @@
 
 using namespace std;
 
+string status_display[2] = {
+  "Battery abnormal",
+  "IMU abnormal"
+};
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -98,6 +103,7 @@ void MainWindow::UI_Init()
     ui->txt_roll->setStyleSheet("QLabel {color:rgb(255, 255, 255);background-color:rgba(0, 0, 0, 0)}");
     ui->txt_yaw->setStyleSheet("QLabel {color:rgb(255, 255, 255);background-color:rgba(0, 0, 0, 0)}");
     ui->txt_bat->setStyleSheet("QLabel {color:rgb(255, 255, 255);background-color:rgba(0, 0, 0, 0)}");
+    ui->txt_status->setStyleSheet("QLabel {color:rgb(255, 0, 0);background-color:rgba(0, 0, 0, 0)}");
 
     QChart *chart = new QChart();
     chart->setTitle("Roll");
@@ -202,11 +208,12 @@ void MainWindow::thrustHandle(char c, char val)
 void MainWindow::readyRead()
 {
 //    char *ret;
+    int ret;
     char buf[100];
 
     //ret = m_infoSock->readAll().data();
-    m_infoSock->read(buf, 100);
-
+    ret = m_infoSock->read(buf, 100);
+//    qDebug()<<"read: "<<ret;
     switch(buf[0]) {
     case 'A':
         memcpy(&info, &buf[1], sizeof(Info));
@@ -271,6 +278,9 @@ void MainWindow::mode_setting()
 
 void MainWindow::mode_flight()
 {
+    uint8_t status = info.status;
+    string status_str;
+
     ui->txt_roll->setText(QString::number(info.attitude.x, 'f', 2));
     ui->txt_pitch->setText(QString::number(info.attitude.y, 'f', 2));
     ui->txt_yaw->setText(QString::number(info.attitude.z, 'f', 2));
@@ -295,6 +305,14 @@ void MainWindow::mode_flight()
     p_imuRoll.translate(-128, -128);
     p_imuRoll.drawPixmap(0, 0, imuRollPix);
     ui->icon_roll->setPixmap(mapImuRoll);
+
+    for (uint8_t i = 0; i < 2; i++)
+    {
+        if (status & 1)
+            status_str += status_display[i] + "\n";
+        status >>= 1;
+    }
+    ui->txt_status->setText(QString::fromStdString(status_str));
 }
 
 void MainWindow::update_PID()
@@ -324,18 +342,27 @@ void MainWindow::connected()
 {
     ui->btn_connect->setIcon(QIcon(":/pic/icon-connect.png"));
     isConnect = true;
-    printf("connect\n");
+    qDebug()<<"connect";
+    timer_info->start(100);
+    action('a', 0);
+    islock = false;
 }
 
 void MainWindow::disConnected()
 {
     ui->btn_connect->setIcon(QIcon(":/pic/icon-disconnect.png"));
     isConnect = false;
-    printf("disconnect\n");
+    timer_info->stop();
+    m_infoSock->disconnected();
+    m_infoSock->close();
+    m_cmdSock->disconnected();
+    m_cmdSock->close();
+    qDebug()<<"disconnect";
 }
 
 void MainWindow::rebootUAV()
 {
+    if (!isConnect) return;
     command('c', 0);
     timer_info->stop();
     m_infoSock->disconnected();
@@ -429,9 +456,7 @@ void MainWindow::on_btn_connect_clicked()
         QString ip_address="192.168.123.1";
         m_infoSock->connectToHost(ip_address, 80);
         m_cmdSock->connectToHost(ip_address, 80);
-        timer_info->start(100);
-        action('a', 0);
-        islock = false;
+
     }
     else {
 
@@ -440,7 +465,6 @@ void MainWindow::on_btn_connect_clicked()
         m_infoSock->close();
         m_cmdSock->disconnected();
         m_cmdSock->close();
-
     }
 }
 
