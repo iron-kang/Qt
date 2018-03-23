@@ -65,7 +65,7 @@ private:
 
     void UI_Init();
     void action(char cmd, int val);
-    void command(char act, int val);
+    void command(char act, char val);
     void mode_flight();
     void mode_setting();
     void update_PID();

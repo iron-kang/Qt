@@ -16,6 +16,7 @@ JoysticThread::JoysticThread(QObject *parent) :
 {
     fd_desktop_controller = -1;
     device_connect();
+    thumb_clk_cnt = 0;
 }
 
 void JoysticThread::device_connect()
@@ -95,7 +96,7 @@ void JoysticThread::readJoyStickData()
                         break;
                     case BTN_MODE:
                         qDebug()<<"BTN_MODE";
-                        emit js_motorLock();
+                        emit js_stop();
                         break;
                     case BTN_SELECT:
                         qDebug()<<"BTN_SELECT";
@@ -110,18 +111,32 @@ void JoysticThread::readJoyStickData()
                         break;
                     case BTN_TR:
                         qDebug()<<"BTN_TR";
-                        emit js_stop();
+
                         break;
                     case BTN_THUMBR:
                         qDebug()<<"BTN_THUMBR";
+                        thumb_clk_cnt++;
+                        if (thumb_clk_cnt == 2)
+                            emit js_motorLock();
                         break;
                     case BTN_THUMBL:
                         qDebug()<<"BTN_THUMBL";
+                        thumb_clk_cnt++;
+                        if (thumb_clk_cnt == 2)
+                            emit js_motorLock();
                         break;
                 }
             } else if(ev[i].value == KEY_RELEASE) {
 
                 qDebug()<<"key release";
+                switch(ev[i].code) {
+                case BTN_THUMBR:
+                    qDebug()<<"BTN_THUMBR";
+                case BTN_THUMBL:
+                    qDebug()<<"BTN_THUMBL";
+                    thumb_clk_cnt = 0;
+                    break;
+                }
             }
 
         }
@@ -131,30 +146,28 @@ void JoysticThread::readJoyStickData()
             switch (ev[i].code) {
             case ABS_X:
                 temp_x = ev[i].value-X_CENTER;
-
-                    qDebug()<<"x: "<<temp_x;
+                if (temp_x > 512) emit thrustEvent('b', 'r');
+                else if (temp_x < -512) emit thrustEvent('b', 'l');
+                else emit thrustEvent('b', 's');
+                    qDebug()<<"rx: "<<temp_x;
                 break;
             case ABS_Y:
                 temp_y = ev[i].value-Y_CENTER;
-
-                if (temp_y == -32767) emit thrustEvent('B', '+');
-                else if (temp_y == 32768) emit thrustEvent('B', '-');
-                else emit thrustEvent('B', 'o');
-                    qDebug()<<"y: "<<temp_y;
+                if (temp_y > 512) emit thrustEvent('b', 'b');
+                else if (temp_y < -512) emit thrustEvent('b', 'f');
+                else emit thrustEvent('b', 'S');
+                    qDebug()<<"ry: "<<temp_y;
                 break;
             case ABS_RX:
                 temp_x = ev[i].value-RX_CENTER;
-                if (temp_x > 0) emit thrustEvent('b', 'r');
-                else if (temp_x < 0) emit thrustEvent('b', 'l');
-                else emit thrustEvent('b', 's');
-//                    qDebug()<<"rx: "<<temp_x;
+
                 break;
             case ABS_RY:
                 temp_y = ev[i].value-RY_CENTER;
-                if (temp_y > 0) emit thrustEvent('b', 'b');
-                else if (temp_y < 0) emit thrustEvent('b', 'f');
-                else emit thrustEvent('b', 'S');
-//                    qDebug()<<"ry: "<<temp_y;
+                if (temp_y < -30000) emit thrustEvent('B', '+');
+                else if (temp_y > 30000) emit thrustEvent('B', '-');
+                else emit thrustEvent('B', 'o');
+                    qDebug()<<"y: "<<temp_y;
                 break;
             case ABS_HAT0X:
                 temp_x = ev[i].value;

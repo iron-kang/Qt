@@ -20,6 +20,7 @@ public:
 private:
     struct input_event ev[64];
     char dev_path[50];
+    uint8_t thumb_clk_cnt;
     int fd_desktop_controller;
     int abs_x, abs_y, abs_rx, abs_ry;
 

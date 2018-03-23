@@ -201,19 +201,19 @@ void MainWindow::thrustHandle(char c, char val)
             timer_thrust->stop();
 #endif
     }
-    qDebug()<<c<<": "<<val;
-//    command(c, (int)val);
+    else
+        command(c, val);
+
 }
 
 void MainWindow::readyRead()
 {
-//    char *ret;
     int ret;
     char buf[100];
 
     //ret = m_infoSock->readAll().data();
     ret = m_infoSock->read(buf, 100);
-//    qDebug()<<"read: "<<ret;
+
     switch(buf[0]) {
     case 'A':
         memcpy(&info, &buf[1], sizeof(Info));
@@ -352,11 +352,14 @@ void MainWindow::disConnected()
 {
     ui->btn_connect->setIcon(QIcon(":/pic/icon-disconnect.png"));
     isConnect = false;
-    timer_info->stop();
-    m_infoSock->disconnected();
-    m_infoSock->close();
-    m_cmdSock->disconnected();
-    m_cmdSock->close();
+    if (timer_info->isActive())
+    {
+        timer_info->stop();
+        m_infoSock->disconnected();
+        m_infoSock->close();
+        m_cmdSock->disconnected();
+        m_cmdSock->close();
+    }
     qDebug()<<"disconnect";
 }
 
@@ -431,7 +434,7 @@ void MainWindow::action(char act, int val)
 }
 
 
-void MainWindow::command(char act, int val)
+void MainWindow::command(char act, char val)
 {
     m_CmdSockMutex.lock();
     buf_cmd[0] = '@';
@@ -439,6 +442,7 @@ void MainWindow::command(char act, int val)
     buf_cmd[2] = act;
     buf_cmd[3] = val;
 
+    qDebug()<<"cmd: "<<act<<", "<<val;
     m_cmdSock->write(buf_cmd, 4);
     m_cmdSock->waitForBytesWritten();
     m_CmdSockMutex.unlock();
@@ -459,7 +463,7 @@ void MainWindow::on_btn_connect_clicked()
 
     }
     else {
-
+        qDebug()<<"close socket";
         timer_info->stop();
         m_infoSock->disconnected();
         m_infoSock->close();
