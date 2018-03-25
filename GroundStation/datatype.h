@@ -70,8 +70,15 @@ enum {
     STATUS_IMU
 };
 
+typedef struct _gps_data {
+    float latitude;
+    float longitude;
+    float altitude;
+} GPS_Data;
+
 typedef struct _info {
     AXIS attitude;
+    GPS_Data gps;
     float thrust[4];
     float bat;
     uint8_t status;

@@ -10,12 +10,14 @@
 #include <QDebug>
 
 #define SAMPLENUM 50
+#define STATE_NUM 3
 
 using namespace std;
 
-string status_display[2] = {
+string status_display[STATE_NUM] = {
   "Battery abnormal",
-  "IMU abnormal"
+  "IMU abnormal",
+  "GPS not found"
 };
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -285,6 +287,9 @@ void MainWindow::mode_flight()
     ui->txt_pitch->setText(QString::number(info.attitude.y, 'f', 2));
     ui->txt_yaw->setText(QString::number(info.attitude.z, 'f', 2));
     ui->txt_bat->setText(QString::number(info.bat, 'f', 1));
+    ui->val_gps_altitude->setText(QString::number(info.gps.altitude, 'f', 2));
+    ui->val_gps_latitude->setText(QString::number(info.gps.latitude, 'f', 2));
+    ui->val_gps_longitude->setText(QString::number(info.gps.longitude, 'f', 2));
 
     QPixmap mapImuPitch(imuPitchPix.size());
     mapImuPitch.fill(Qt::transparent);
@@ -306,7 +311,7 @@ void MainWindow::mode_flight()
     p_imuRoll.drawPixmap(0, 0, imuRollPix);
     ui->icon_roll->setPixmap(mapImuRoll);
 
-    for (uint8_t i = 0; i < 2; i++)
+    for (uint8_t i = 0; i < STATE_NUM; i++)
     {
         if (status & 1)
             status_str += status_display[i] + "\n";
