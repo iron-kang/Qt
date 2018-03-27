@@ -287,9 +287,9 @@ void MainWindow::mode_flight()
     ui->txt_pitch->setText(QString::number(info.attitude.y, 'f', 2));
     ui->txt_yaw->setText(QString::number(info.attitude.z, 'f', 2));
     ui->txt_bat->setText(QString::number(info.bat, 'f', 1));
-    ui->val_gps_altitude->setText(QString::number(info.gps.altitude, 'f', 2));
-    ui->val_gps_latitude->setText(QString::number(info.gps.latitude, 'f', 2));
-    ui->val_gps_longitude->setText(QString::number(info.gps.longitude, 'f', 2));
+    ui->val_gps_altitude->setText(QString::number(info.gps.altitude, 'f', 5));
+    ui->val_gps_latitude->setText(QString::number(info.gps.latitude, 'f', 5));
+    ui->val_gps_longitude->setText(QString::number(info.gps.longitude, 'f', 5));
 
     QPixmap mapImuPitch(imuPitchPix.size());
     mapImuPitch.fill(Qt::transparent);
@@ -449,7 +449,7 @@ void MainWindow::command(char act, char val)
 
     qDebug()<<"cmd: "<<act<<", "<<val;
     m_cmdSock->write(buf_cmd, 4);
-    m_cmdSock->waitForBytesWritten();
+//    m_cmdSock->waitForBytesWritten();
     m_CmdSockMutex.unlock();
 }
 
