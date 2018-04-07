@@ -20,6 +20,10 @@ string status_display[STATE_NUM] = {
   "GPS not found"
 };
 
+const char map_str[] = {"https://maps.googleapis.com/maps/api/staticmap?center=%f,%f&zoom=%d"
+                        "&size=600x600&maptype=hybrid"//roadmap"
+                      "&key=AIzaSyBc8rZgqD1Q4S84lPYuHpyoaQNMl0Bw4Tk"};
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -66,7 +70,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //    QString ip_address="192.168.1.1";
 //    m_infoSock->connectToHost(ip_address, 80);
 //    timer_info->start(100);
-//    tim_map->start(2000);
+//    timer_map->start(2000);
     updateMap();
 
     devWatcher = new QFileSystemWatcher(this);
@@ -82,7 +86,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->btn_setpid, SIGNAL(clicked()), this, SLOT(updatePID()));
     connect(ui->btn_reboot, SIGNAL(clicked()), this, SLOT(rebootUAV()));
-
+    scale = 16;
     islock = true;
 }
 
@@ -211,10 +215,10 @@ void MainWindow::thrustHandle(char c, char val)
 void MainWindow::readyRead()
 {
     int ret;
-    char buf[100];
+    char buf[200];
 
     //ret = m_infoSock->readAll().data();
-    ret = m_infoSock->read(buf, 100);
+    ret = m_infoSock->read(buf, 200);
 
     switch(buf[0]) {
     case 'A':
@@ -246,7 +250,6 @@ void MainWindow::readyRead()
         mode_setting();
         break;
     }
-
 }
 
 void MainWindow::mode_setting()
@@ -282,11 +285,12 @@ void MainWindow::mode_flight()
 {
     uint8_t status = info.status;
     string status_str;
-
+//    qDebug()<<status;
     ui->txt_roll->setText(QString::number(info.attitude.x, 'f', 2));
     ui->txt_pitch->setText(QString::number(info.attitude.y, 'f', 2));
     ui->txt_yaw->setText(QString::number(info.attitude.z, 'f', 2));
     ui->txt_bat->setText(QString::number(info.bat, 'f', 1));
+    ui->txt_height->setText(QString::number(info.height, 'f', 2));
     ui->val_gps_altitude->setText(QString::number(info.gps.altitude, 'f', 5));
     ui->val_gps_latitude->setText(QString::number(info.gps.latitude, 'f', 5));
     ui->val_gps_longitude->setText(QString::number(info.gps.longitude, 'f', 5));
@@ -381,10 +385,19 @@ void MainWindow::rebootUAV()
 
 void MainWindow::updateMap()
 {
+    char str[300];
+    if (info.gps.latitude == 0 && info.gps.longitude == 0)
+        sprintf(str, "https://maps.google.com");
+    else
+        sprintf(str, map_str, info.gps.latitude/100, info.gps.longitude/100, scale);
+    m_page->load(QUrl(str));
+//    qDebug()<<info.gps.latitude/100<<", "<<info.gps.longitude/100;
+#if 0
     m_page->load(QUrl(QStringLiteral("https://maps.googleapis.com/maps/api/staticmap?center=22.6004779,120.3127385&zoom=16"
                                      "&size=600x600&maptype=hybrid"//roadmap"
                                    "&markers=color:red%7Clabel:H%7C22.6004779,120.3127385"
                                    "&key=AIzaSyBc8rZgqD1Q4S84lPYuHpyoaQNMl0Bw4Tk")));
+#endif
 }
 
 void MainWindow::updatePID()
@@ -479,12 +492,16 @@ void MainWindow::on_btn_connect_clicked()
 
 void MainWindow::on_horizontalSlider_sliderMoved(int position)
 {
+    scale = position;
     char cmd[500];
+    if (info.gps.latitude == 0 && info.gps.longitude == 0)
+        sprintf(cmd, "https://maps.google.com");
+    else
     sprintf(cmd,
-    "https://maps.googleapis.com/maps/api/staticmap?center=22.6004779,120.3127385&zoom=%d"
+    "https://maps.googleapis.com/maps/api/staticmap?center=%f,%f&zoom=%d"
                                          "&size=600x600&maptype=hybrid"
-                                       "&markers=color:red%%7Clabel:H%%7C22.6004779,120.3127385"
-                                       "&key=AIzaSyBc8rZgqD1Q4S84lPYuHpyoaQNMl0Bw4Tk", position);
+                                       "&markers=color:red%%7Clabel:H%%7C%f,%f"
+                                       "&key=AIzaSyBc8rZgqD1Q4S84lPYuHpyoaQNMl0Bw4Tk", info.gps.latitude/100, info.gps.longitude/100, position, info.gps.latitude/100, info.gps.longitude/100);
     m_page->load(QUrl(QString(cmd)));
 }
 

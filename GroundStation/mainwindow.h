@@ -60,6 +60,8 @@ private:
     char buf_info[100];
     char buf_cmd[100];
     char thrust_val;
+    int scale;
+
     deque<float> que_roll;
     deque<float> que_pitch;
 

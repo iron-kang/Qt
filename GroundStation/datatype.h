@@ -71,17 +71,25 @@ enum {
 };
 
 typedef struct _gps_data {
+    float utc_time;
     float latitude;
+    char latitude_ch;
     float longitude;
+    char longitude_ch;
+    int status;
+    int num;
+    float precision;
     float altitude;
+    float height;
 } GPS_Data;
 
 typedef struct _info {
     AXIS attitude;
-    GPS_Data gps;
     float thrust[4];
     float bat;
+    float height;
     uint8_t status;
+    GPS_Data gps;
 }Info;
 
 #endif // DATATYPE_H
