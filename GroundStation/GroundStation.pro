@@ -14,14 +14,16 @@ SOURCES += \
         mainwindow.cpp \
         glwidget.cpp \
         drone.cpp \
-    joysticthread.cpp
+    joysticthread.cpp \
+    arduino-serial-lib.cpp
 
 HEADERS += \
         mainwindow.h \
         datatype.h \
         glwidget.h \
         drone.h \
-    joysticthread.h
+    joysticthread.h \
+    arduino-serial-lib.h
 
 FORMS += \
         mainwindow.ui

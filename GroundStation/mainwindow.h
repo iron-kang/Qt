@@ -13,6 +13,7 @@
 #include <QFileSystemWatcher>
 #include "datatype.h"
 #include "joysticthread.h"
+#include "arduino-serial-lib.h"
 
 QT_CHARTS_BEGIN_NAMESPACE
 class QChartView;
@@ -44,11 +45,12 @@ private:
     QTcpSocket *m_infoSock, *m_cmdSock;
     QTimer *timer_info;
     QTimer *timer_thrust;
+    QTimer *timer_3dr;
     QPixmap imuPitchPix, imuRollPix;
     QWebEnginePage *m_page;
     QMutex m_InfoSockMutex, m_CmdSockMutex;
-    QChartView *m_chart_roll, *m_chart_pitch;
-    QLineSeries *m_series_roll, *m_series_pitch;
+    QChartView *m_chart_roll, *m_chart_pitch, *m_chart_height;
+    QLineSeries *m_series_roll, *m_series_pitch, *m_series_height;
     Info info;
     QFileSystemWatcher *devWatcher;
     JoysticThread *joysticThread;
@@ -59,11 +61,15 @@ private:
     bool islock;
     char buf_info[100];
     char buf_cmd[100];
+    uint8_t buf_dist[12];
     char thrust_val;
     int scale;
+    int uart_3dr433;
+    int uav_x, uav_y;
 
     deque<float> que_roll;
     deque<float> que_pitch;
+    deque<float> que_height;
 
     void UI_Init();
     void action(char cmd, int val);
@@ -80,6 +86,7 @@ private slots:
     void rebootUAV();
     void pollThrust();
     void getInfo();
+    void getDist();
     void updateMap();
     void readyRead();
     void connected();
