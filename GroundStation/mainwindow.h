@@ -45,7 +45,6 @@ private:
     QTcpSocket *m_infoSock, *m_cmdSock;
     QTimer *timer_info;
     QTimer *timer_thrust;
-    QTimer *timer_3dr;
     QPixmap imuPitchPix, imuRollPix;
     QWebEnginePage *m_page;
     QMutex m_InfoSockMutex, m_CmdSockMutex;

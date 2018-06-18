@@ -9,7 +9,7 @@
 #include <QBoxLayout>
 #include <QDebug>
 
-#define Telemetry
+//#define Telemetry
 #define SAMPLENUM 50
 #define STATE_NUM 3
 
@@ -31,11 +31,11 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->setAttribute(Qt::WA_AcceptTouchEvents);
-    this->setWindowState(Qt::WindowFullScreen);
-    this->grabGesture( Qt::PinchGesture );
-    this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
-    this->showFullScreen();
+//    this->setAttribute(Qt::WA_AcceptTouchEvents);
+//    this->setWindowState(Qt::WindowFullScreen);
+//    this->grabGesture( Qt::PinchGesture );
+//    this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+//    this->showFullScreen();
 
     m_scene = new QGraphicsScene();
 
@@ -59,14 +59,13 @@ MainWindow::MainWindow(QWidget *parent) :
     imuPitchPix = QPixmap(*ui->icon_pitch->pixmap());
     imuRollPix = QPixmap(*ui->icon_roll->pixmap());
 
+#ifdef Telemetry
     uart_3dr433 = serialport_init("/dev/ttyUSB1", 57600);
     if (uart_3dr433 == -1)
     {
         qDebug()<<"Can't connect arduino";
     }
-    timer_3dr = new QTimer(this);
-    //connect(timer_3dr, SIGNAL(timeout()), this, SLOT(readyRead()));
-    timer_3dr->start(200);
+#endif
 
     isConnect = false;
     timer_info = new QTimer(this);
@@ -85,8 +84,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 //    QString ip_address="192.168.1.1";
 //    m_infoSock->connectToHost(ip_address, 80);
-    timer_info->start(200);
-    timer_map->start(2000);
+//    timer_info->start(100);
+    //timer_map->start(2000);
     updateMap();
 
 
@@ -252,10 +251,16 @@ void MainWindow::readyRead()
 {
     int ret;
     char buf[200];
+    uint8_t cs = 0;
 
     //ret = m_infoSock->readAll().data();
 #ifdef Telemetry
-    ret = read(uart_3dr433, buf, 200);
+
+    ret = read(uart_3dr433, buf, 82);
+    for (int i = 0; i < 81; i++)
+        cs += buf[i];
+    if (cs != buf[81] || ret != 82) return;
+    qDebug()<<"read len:"<<ret<<" cs "<<cs<<", "<<(uint8_t)buf[81];
 #else
     ret = m_infoSock->read(buf, 200);
 #endif
@@ -280,7 +285,7 @@ void MainWindow::readyRead()
         break;
     default:
         qDebug()<<"head: "<<buf[0];
-        break;
+        return;
     }
 
 //    printf("roll: %f, pitch: %f, Pitch: %f\n", info.attitude.x, info.attitude.y, info.attitude.z);
@@ -494,8 +499,8 @@ void MainWindow::action(char act, int val)
     buf_info[3] = val;
 
 #ifdef Telemetry
-    write(uart_3dr433, buf_info, 4);
-    qDebug()<<act;
+    int ret = write(uart_3dr433, buf_info, 4);
+    usleep(1000);
     readyRead();
 #else
     m_infoSock->write(buf_info, 4);
@@ -571,7 +576,7 @@ void MainWindow::on_btn_connect_clicked()
 {
     if (!isConnect)
     {
-        QString ip_address="192.168.0.22";
+        QString ip_address="192.168.43.123";
         m_infoSock->connectToHost(ip_address, 80);
         m_cmdSock->connectToHost(ip_address, 80);
 
