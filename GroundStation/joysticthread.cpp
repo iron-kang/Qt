@@ -114,14 +114,14 @@ void JoysticThread::readJoyStickData()
 
                         break;
                     case BTN_THUMBR:
-                        qDebug()<<"BTN_THUMBR";
                         thumb_clk_cnt++;
-                        if (thumb_clk_cnt == 2)
+                        qDebug()<<"BTN_THUMBR"<<thumb_clk_cnt;
+                        //if (thumb_clk_cnt == 2)
                             emit js_motorLock();
                         break;
                     case BTN_THUMBL:
-                        qDebug()<<"BTN_THUMBL";
                         thumb_clk_cnt++;
+                        qDebug()<<"BTN_THUMBL"<<thumb_clk_cnt;
                         if (thumb_clk_cnt == 2)
                             emit js_motorLock();
                         break;
@@ -131,9 +131,7 @@ void JoysticThread::readJoyStickData()
                 qDebug()<<"key release";
                 switch(ev[i].code) {
                 case BTN_THUMBR:
-                    qDebug()<<"BTN_THUMBR";
                 case BTN_THUMBL:
-                    qDebug()<<"BTN_THUMBL";
                     thumb_clk_cnt = 0;
                     break;
                 }

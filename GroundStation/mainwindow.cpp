@@ -12,6 +12,7 @@
 //#define Telemetry
 #define SAMPLENUM 50
 #define STATE_NUM 3
+#define PACKSIZE 20
 
 using namespace std;
 
@@ -59,14 +60,6 @@ MainWindow::MainWindow(QWidget *parent) :
     imuPitchPix = QPixmap(*ui->icon_pitch->pixmap());
     imuRollPix = QPixmap(*ui->icon_roll->pixmap());
 
-#ifdef Telemetry
-    uart_3dr433 = serialport_init("/dev/ttyUSB1", 57600);
-    if (uart_3dr433 == -1)
-    {
-        qDebug()<<"Can't connect arduino";
-    }
-#endif
-
     isConnect = false;
     timer_info = new QTimer(this);
     connect(timer_info, SIGNAL(timeout()), this, SLOT(getInfo()));
@@ -84,8 +77,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
 //    QString ip_address="192.168.1.1";
 //    m_infoSock->connectToHost(ip_address, 80);
-//    timer_info->start(100);
-    //timer_map->start(2000);
+#ifdef Telemetry
+    uart_3dr433 = serialport_init("/dev/ttyUSB1", 115200);
+    if (uart_3dr433 == -1)
+    {
+        qDebug()<<"Can't connect arduino";
+    }
+    timer_info->start(150);
+#endif
+
+//    timer_map->start(2000);
     updateMap();
 
 
@@ -212,6 +213,7 @@ void MainWindow::lockMotor()
 
 //    islock = !islock;
         islock = false;
+        qDebug()<<"motor unlock";
 }
 
 void MainWindow::showModifiedDirectory(QString path)
@@ -227,6 +229,7 @@ void MainWindow::pollThrust()
 
 void MainWindow::thrustHandle(char c, char val)
 {
+    qDebug()<<c<<", "<<val;
     if (!isConnect || islock) return;
 
     if (c == 'B')
@@ -236,7 +239,7 @@ void MainWindow::thrustHandle(char c, char val)
         {
             qDebug()<<"start thrust timer.."<<isConnect;
             thrust_val = val;
-            timer_thrust->start(500);
+            timer_thrust->start(30);
         }
         else if (val == 'o')
             timer_thrust->stop();
@@ -255,12 +258,19 @@ void MainWindow::readyRead()
 
     //ret = m_infoSock->readAll().data();
 #ifdef Telemetry
+    uint8_t pack = sizeof(Info)/PACKSIZE;
+    read(uart_3dr433, &buf[0], 1);
 
-    ret = read(uart_3dr433, buf, 82);
-    for (int i = 0; i < 81; i++)
-        cs += buf[i];
-    if (cs != buf[81] || ret != 82) return;
-    qDebug()<<"read len:"<<ret<<" cs "<<cs<<", "<<(uint8_t)buf[81];
+    if (buf[0] != 'A' && buf[0] != 'a') return;
+//    for (int i = 0; i < 81; i++)
+//        cs += buf[i];
+    for (uint8_t i = 0; i < pack; i++)
+    {
+        read(uart_3dr433, &buf[1+PACKSIZE*i], PACKSIZE);
+        usleep(30000);
+    }
+    read(uart_3dr433, &buf[1+PACKSIZE*pack], sizeof(Info)%PACKSIZE);
+
 #else
     ret = m_infoSock->read(buf, 200);
 #endif
@@ -312,6 +322,7 @@ void MainWindow::mode_setting()
     ui->val_MLB->setText(QString::number(info.thrust[LEFT_BACK], 'f', 3));
     ui->val_MRF->setText(QString::number(info.thrust[RIGHT_FRONT], 'f', 3));
     ui->val_MRB->setText(QString::number(info.thrust[RIGHT_BACK], 'f', 3));
+    ui->val_MB->setText(QString::number(info.thrust[BASE], 'f', 2));
 
 
     for (int i = 0; i < (int)que_roll.size(); i++)
@@ -404,7 +415,7 @@ void MainWindow::connected()
     ui->btn_connect->setIcon(QIcon(":/pic/icon-connect.png"));
     isConnect = true;
     qDebug()<<"connect";
-    timer_info->start(100);
+    timer_info->start(500);
     action('a', 0);
     islock = false;
 }
@@ -500,7 +511,7 @@ void MainWindow::action(char act, int val)
 
 #ifdef Telemetry
     int ret = write(uart_3dr433, buf_info, 4);
-    usleep(1000);
+    usleep(5000);
     readyRead();
 #else
     m_infoSock->write(buf_info, 4);
@@ -518,13 +529,14 @@ void MainWindow::command(char act, char val)
     buf_cmd[2] = act;
     buf_cmd[3] = val;
 
-    qDebug()<<"cmd: "<<act<<", "<<val;
+//    qDebug()<<"cmd: "<<act<<", "<<val;
 #ifdef Telemetry
     write(uart_3dr433, buf_cmd, 4);
 #else
     m_cmdSock->write(buf_cmd, 4);
+    m_cmdSock->waitForBytesWritten();
 #endif
-//    m_cmdSock->waitForBytesWritten();
+
     m_CmdSockMutex.unlock();
 }
 
@@ -576,7 +588,7 @@ void MainWindow::on_btn_connect_clicked()
 {
     if (!isConnect)
     {
-        QString ip_address="192.168.43.123";
+        QString ip_address="192.168.0.47";
         m_infoSock->connectToHost(ip_address, 80);
         m_cmdSock->connectToHost(ip_address, 80);
 

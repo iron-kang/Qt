@@ -9,7 +9,8 @@ typedef enum {
     LEFT_FRONT = 0,
     LEFT_BACK,
     RIGHT_FRONT,
-    RIGHT_BACK
+    RIGHT_BACK,
+    BASE
 } motor_t;
 
 typedef enum {
@@ -85,7 +86,7 @@ typedef struct _gps_data {
 
 typedef struct _info {
     AXIS attitude;
-    float thrust[4];
+    float thrust[5];
     float bat;
     unsigned int height;
     uint8_t status;
