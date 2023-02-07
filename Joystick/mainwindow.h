@@ -28,6 +28,7 @@ private:
     Ui::MainWindow *ui;
     JoystickWatcher jsWatcher;
     JoystickThread jsThread;
+    bool debug;
 
     std::map<int, QLabel*> buttons;
 };

@@ -5,32 +5,31 @@
 #include <libudev.h>
 #include <linux/input.h>
 #include <QFile>
+#include <stdlib.h>
 
 static int hotplug_callback(struct libusb_context *ctx, struct libusb_device *dev,
                      libusb_hotplug_event event, void *user_data) {
-  static libusb_device_handle *dev_handle = nullptr;
-  struct libusb_device_descriptor desc;
+    static libusb_device_handle *dev_handle = nullptr;
+    struct libusb_device_descriptor desc;
 
-  bool *isConnect = static_cast<bool*>(user_data);
+    bool *isConnect = static_cast<bool*>(user_data);
 
-  (void)libusb_get_device_descriptor(dev, &desc);
+    libusb_get_device_descriptor(dev, &desc);
 
-  if (LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED == event) {
-    *isConnect = true;
-    qDebug()<<"plug";
-  } else if (LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT == event) {
-      qDebug()<<"unplug";
-      *isConnect = false;
-    if (dev_handle) {
+    if (LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED == event) {
+        *isConnect = true;
+    }else if (LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT == event) {
 
-      libusb_close(dev_handle);
-      dev_handle = nullptr;
+        *isConnect = false;
+        if (dev_handle) {
+            libusb_close(dev_handle);
+            dev_handle = nullptr;
+        }
+    } else {
+        qDebug()<<"Unhandled event:"<< event;
     }
-  } else {
-    qDebug()<<"Unhandled event:"<< event;
-  }
 
-  return 0;
+    return 0;
 }
 
 QString JoystickWatcher::get_path()
@@ -55,7 +54,7 @@ QString JoystickWatcher::get_path()
         /* usb_device_get_devnode() returns the path to the device node
            itself in /dev. */
         const char *tmp_path = udev_device_get_devnode(dev.get());
-        printf("tmp_path = %s\n", tmp_path);
+
         struct udev_device *pdev = udev_device_get_parent_with_subsystem_devtype(
                                dev.get(),
                                "usb",
@@ -66,15 +65,13 @@ QString JoystickWatcher::get_path()
 
         std::string vid = udev_device_get_sysattr_value(pdev,"idVendor");
         std::string pid = udev_device_get_sysattr_value(pdev, "idProduct");
-        printf("vid: %s, pid: %s, %x\n", vid.c_str(), pid.c_str(), stoi(vid, 0, 16));
-
+        qDebug()<<"path: "<<tmp_path<<", "<<", vid:"<<QString::fromUtf8(vid.c_str())<<", pid: "<<QString::fromUtf8(pid.c_str());;
         if ((stoi(vid, 0, 16) == JOYSTICK_VID) && (stoi(pid, 0, 16) == JOYSTICK_PID)) {
             js_path = QString::fromLocal8Bit(tmp_path);
             break;
         }
     }
 
-    qDebug() << "path: " << js_path;
     return js_path;
 }
 
@@ -88,7 +85,6 @@ void JoystickWatcher::run()
                                             &callback_handle);
 
 
-    printf("joystick watcher thread.....\n");
     if (LIBUSB_SUCCESS != rc) {
         qDebug()<<"Error creating a hotplug callback";
         libusb_exit(nullptr);
@@ -97,8 +93,6 @@ void JoystickWatcher::run()
 
     while (isRuning) {
         libusb_handle_events(nullptr);
-        qDebug()<<"connect: "<<isConnectd;
-        printf("connected: %d\n", isConnectd);
         if (isConnectd && js_path.isEmpty()) {
             js_path = get_path();
             emit notify(js_path);
@@ -134,7 +128,6 @@ void JoystickThread::connect(QString dev)
         active = false;
         return;
     }
-    qDebug() << __func__ << ": " << dev;
     active = true;
 }
 
@@ -149,7 +142,6 @@ void JoystickThread::run()
 {
     struct input_event ev[64];
     int i;
-    printf("joystick thread....\n");
 
     while(true)
     {
@@ -166,6 +158,7 @@ void JoystickThread::run()
             if(EV_KEY == ev[i].type)
             {
                 emit sendButton(ev[i].code, ev[i].value);
+#if 0
                 if(ev[i].value == KEY_PRESS)
                 {
 
@@ -193,7 +186,7 @@ void JoystickThread::run()
 
 
                 }
-
+#endif
             }
             else if (EV_ABS == ev[i].type)
             {

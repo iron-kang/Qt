@@ -7,5 +7,6 @@
         <file>img/joystick_disconnect.png</file>
         <file>img/joystick.png</file>
         <file>img/button_release.png</file>
+        <file>img/joystick.ico</file>
     </qresource>
 </RCC>

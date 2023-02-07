@@ -40,6 +40,8 @@ public:
 private:
     int fd;
     bool active;
+    bool debug;
+
 signals:
     void sendX(int val);
     void sendY(int val);
