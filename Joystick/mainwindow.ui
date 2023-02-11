@@ -241,6 +241,9 @@
       <bold>true</bold>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel{color : white;}</string>
+    </property>
     <property name="text">
      <string>X-Axis</string>
     </property>
@@ -262,6 +265,9 @@
       <weight>75</weight>
       <bold>true</bold>
      </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel{color : white;}</string>
     </property>
     <property name="text">
      <string>Y-Axis</string>
@@ -374,6 +380,9 @@
       <height>35</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel{color : white;}</string>
+    </property>
     <property name="text">
      <string>1</string>
     </property>
@@ -389,6 +398,9 @@
       <width>35</width>
       <height>35</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel{color : white;}</string>
     </property>
     <property name="text">
      <string>2</string>
@@ -406,6 +418,9 @@
       <height>35</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel{color : white;}</string>
+    </property>
     <property name="text">
      <string>3</string>
     </property>
@@ -421,6 +436,9 @@
       <width>35</width>
       <height>35</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel{color : white;}</string>
     </property>
     <property name="text">
      <string>4</string>
@@ -438,6 +456,9 @@
       <height>35</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel{color : white;}</string>
+    </property>
     <property name="text">
      <string>5</string>
     </property>
@@ -453,6 +474,9 @@
       <width>35</width>
       <height>35</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel{color : white;}</string>
     </property>
     <property name="text">
      <string>6</string>
