@@ -6,6 +6,9 @@
 #include <map>
 #include "joystick.h"
 
+#define WIDTH 1280
+#define HEIGHT 720
+
 namespace Ui {
 class MainWindow;
 }
@@ -31,6 +34,8 @@ private:
     bool debug;
 
     std::map<int, QLabel*> buttons;
+
+    void resizeLayout();
 };
 
 #endif // MAINWINDOW_H
