@@ -5,6 +5,7 @@ from PyQt5.QtCore import QThread, pyqtSignal, Qt, QCoreApplication, QFile
 from PyQt5 import QtCore, uic
 from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
 from ping3 import ping
+#from PySpinCam import PySpinCam
 import cv2, re
 
 path = os.path.dirname(__file__)
@@ -38,48 +39,76 @@ class ChannelEdit(QDialog, Ui_Dialog):
 class MyThread(QThread):
     image = pyqtSignal(QPixmap, int)
     noframe = pyqtSignal(int)
-    def __init__(self, id):
+    def __init__(self, id, address, ip):
         super().__init__()
         self.id = id
-
-    def open(self, address, ip):
+        self.isOpened = False
         self.address = address
         self.ip = ip        
-        
+        self.isGigE = False
         self.run = True
+        print(address, ip)
+        self.setIPAddress(address, ip)
         if address == '1':
             print('open web cam................', address)
             self.cap = cv2.VideoCapture(int(address))
-        elif address == '0':
-            print('open CSI cam................')
-            self.cap = cv2.VideoCapture('nvarguscamerasrc ! video/x-raw(memory:NVMM), width=(int)3280, height=(int)2464, format=(string)NV12, framerate=(fraction)21/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)820, height=(int)616, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsin', cv2.WINDOW_AUTOSIZE)
+        elif address.find('GigE') != -1:
+            self.isGigE = True
         else:
             self.cap = cv2.VideoCapture()
-        if ping(ip):
-            if id == '1' or id == '4':
-                self.cap.open(address)
+        # if len(ip) != 0 and ping(ip):
+        #     self.open()
+
+    def setIPAddress(self, address, ip):
+        self.address = address
+        self.ip = ip
+        if address.find('GigE') != -1:
+            self.isGigE = True
+        else:
+            self.isGigE = False
+
+    def open(self):
+        if self.isGigE:
+            self.GigECam = PySpinCam()
+            self.GigECam.setup()
+            self.GigECam.begin()
+            self.isOpened = True
+        else:
+            self.cap.open(self.address)
+            self.isOpened = self.cap.isOpened()
+
 
     def stop(self):
         self.run = False 
-        #QThread.sleep(2)
-        
 
     def run(self):
         text = self.id.__str__()
+        self.run = True
         while self.run:
-            if not self.cap.isOpened():
+
+            if not self.isOpened:
                 if ping(self.ip):
-                    self.cap.open(self.address)
-                QThread.sleep(1)
+                    self.open()
+                QThread.msleep(500)
                 continue
 
-            ret, frame = self.cap.read()
+            if self.isGigE:
+                ret, frame = self.GigECam.capture()
+            else:
+                ret, frame = self.cap.read()
+
             if not ret:
-                QThread.sleep(1)
-                print('no frame')
+                if self.isGigE:
+                    self.GigECam.end()
+                    
+                # else:
+                    # print('no frame')
                 self.noframe.emit(self.id)
                 continue
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+            if not self.isGigE:
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                
             height, width, channel = frame.shape
             cv2.putText(frame, text, (width-50, height-int(50/2)), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 3, cv2.LINE_AA)
             if self.id == 4:
@@ -90,6 +119,10 @@ class MyThread(QThread):
             pixmap = QPixmap.fromImage(qImg)
             self.image.emit(pixmap, self.id)
         
+        if self.isGigE:
+            self.GigECam.end()
+
+        self.isOpened = False
         self.cap.release()
         self.noframe.emit(self.id)
 
@@ -121,7 +154,10 @@ class MyWidget(QWidget):
             self.query.exec_("INSERT INTO channel VALUES(4, '')")
             self.query.exec_("select id, name from channel")
             while self.query.next():
-                self.address.append(self.query.value(1))
+                str = self.query.value(1)
+                if str.find('GigE') > 0:
+                    str = 'GigE'
+                self.address.append(str)
                 ip = re.findall(r'[0-9]+(?:\.[0-9]+){3}', self.query.value(1))
                 if len(ip) != 0:
                     self.ip.append(ip[0])
@@ -159,12 +195,11 @@ class MyWidget(QWidget):
 
     def createThread(self):
         for id, ip in enumerate(self.ip):
-            monitor = MyThread(id+1)
+            monitor = MyThread(id+1, self.address[id], ip)
             monitor.image.connect(self.setImage)
             monitor.noframe.connect(self.noFrame)
             self.monitors.append(monitor)
             if len(ip) != 0:
-                monitor.open(self.address[id], ip)
                 monitor.start()
 
     def noFrame(self, id):
@@ -191,7 +226,7 @@ class MyWidget(QWidget):
 
     def changeAddress(self, channels):
         if len(channels):
-            
+            ready_monitors = []
             for id, value in enumerate(channels):
                 self.query.prepare("UPDATE channel SET name=:name where id=:id")
                 self.query.bindValue(":id", id+1)
@@ -199,17 +234,20 @@ class MyWidget(QWidget):
                 self.query.exec()
                 ip = re.findall(r'[0-9]+(?:\.[0-9]+){3}', value)
                 if len(ip) != 0:
-                    
                     if self.address[id] != value:
                         self.ip[id] = ip[0]
                         self.monitors[id].stop()
-                        self.monitors[id].open(value, ip[0])
-                        self.monitors[id].start()
-                        print('run: ', value, ip[0])
+                        self.monitors[id].setIPAddress(value, ip[0])
+                        ready_monitors.append(self.monitors[id])
+                        
                 else:
                     self.ip[id] = ''
                     self.monitors[id].stop()
                     print('stop monitor ', id+1)
+            QThread.msleep(100)
+            for monitor in ready_monitors:
+                # monitor.open()
+                monitor.start()
                 
             self.address = channels
 
