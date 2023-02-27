@@ -4,20 +4,24 @@ import numpy as np
 
 class PySpinCam:
     def __init__(self):
-        self.system = PySpin.System.GetInstance()
-        self.cam_list = self.system.GetCameras()
         self.cam = None
-        self.img = np.zeros((300, 300, 3), np.uint8)
-        num_cameras = self.cam_list.GetSize()
-
-        if num_cameras == 0:
-            self.cam_list.Clear()
-            self.system.ReleaseInstance()
-            print('Not enough cameras!')
-            return
+        self.system = PySpin.System.GetInstance()
+        self.img = np.zeros((1280, 720, 3), np.uint8)            
 
     def setup(self):
         try:
+            print('Gige get instance')
+            self.system = PySpin.System.GetInstance()
+            print('Gige get camera')
+            self.cam_list = self.system.GetCameras()
+            print('Gige get cam size')
+            num_cameras = self.cam_list.GetSize()
+
+            if num_cameras == 0:
+                self.cam_list.Clear()
+                self.system.ReleaseInstance()
+                print('Not enough cameras!')
+                return False
             self.cam = self.cam_list[0]
             nodemap_tldevice = self.cam.GetTLDeviceNodeMap()
             self.cam.Init()
@@ -91,13 +95,15 @@ class PySpinCam:
             image_result.Release()
             return True, self.img
         except PySpin.SpinnakerException as ex:
+            print("------------------------")
             print('Error: %s' % ex)
             return False, None
 
     def end(self):
-        self.cam.EndAcquisition()
+        None
         
     def release(self):
+        self.cam.EndAcquisition()
         self.cam.DeInit()
         self.cam_list.Clear()
         self.system.ReleaseInstance()

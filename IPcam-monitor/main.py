@@ -1,39 +1,41 @@
 import sys, os
 from PyQt5.QtWidgets import (QApplication, QWidget, QGridLayout, QPushButton, QLabel, QMainWindow, QDialog, QMessageBox)
 from PyQt5.QtGui import QPixmap, QImage, QFont
-from PyQt5.QtCore import QThread, pyqtSignal, Qt, QCoreApplication, QFile
+from PyQt5.QtCore import QThread, pyqtSignal, Qt, QCoreApplication
 from PyQt5 import QtCore, uic
-from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
 from ping3 import ping
 #from PySpinCam import PySpinCam
 import cv2, re
+import sqlite3 as sql
 
 path = os.path.dirname(__file__)
 qtCreatorFile = "channel_edit.ui"
 Ui_Dialog, _ = uic.loadUiType(os.path.join(path,qtCreatorFile))
 
 class ChannelEdit(QDialog, Ui_Dialog):
-    def __init__(self, list):
+    def __init__(self, list, local_ip):
         super(ChannelEdit, self).__init__()
         self.setupUi(self)
-        self.setWindowTitle('Cannel edit')
         self.setWindowFlags(Qt.CustomizeWindowHint)
         self.btn_ok.clicked.connect(self.ok)
         self.btn_cancel.clicked.connect(self.cancel)
         self.ed_channels = [ self.ed_channel1, self.ed_channel2, self.ed_channel3, self.ed_channel4 ]
-        self.result = []
+        self.address = []
+        self.local_IP = ''
+        self.ed_local_ip.setText(local_ip)
         for id, value in enumerate(list):
             self.ed_channels[id].setText(value) 
 
     def ok(self):
-        self.result = [ self.ed_channel1.text(), self.ed_channel2.text(), self.ed_channel3.text(), self.ed_channel4.text() ]
+        self.address = [ self.ed_channel1.text(), self.ed_channel2.text(), self.ed_channel3.text(), self.ed_channel4.text() ]
+        self.local_IP = self.ed_local_ip.text()
         self.close()
 
     def cancel(self):
         self.close()
 
     def getResults(self):
-        return self.result
+        return self.address, self.local_IP
         
 
 class MyThread(QThread):
@@ -49,10 +51,7 @@ class MyThread(QThread):
         self.run = True
         print(address, ip)
         self.setIPAddress(address, ip)
-        if address == '1':
-            print('open web cam................', address)
-            self.cap = cv2.VideoCapture(int(address))
-        elif address.find('GigE') != -1:
+        if address.find('GigE') != -1:
             self.isGigE = True
         else:
             self.cap = cv2.VideoCapture()
@@ -69,13 +68,22 @@ class MyThread(QThread):
 
     def open(self):
         if self.isGigE:
+            print('PySpinCam init')
             self.GigECam = PySpinCam()
-            self.GigECam.setup()
+            print('gige setup')
+            if self.GigECam.setup() == False:
+                return
+            print('gige begin')
             self.GigECam.begin()
             self.isOpened = True
+            # self.setPriority(6)
+            print('PySpinCam init finish')
         else:
+            print('rtsp init: ', self.address)
             self.cap.open(self.address)
+            print('rtsp open...')
             self.isOpened = self.cap.isOpened()
+            print('rtsp init finish')
 
 
     def stop(self):
@@ -84,11 +92,16 @@ class MyThread(QThread):
     def run(self):
         text = self.id.__str__()
         self.run = True
+        
+        print('run: ', self.address, self.id)
         while self.run:
-
             if not self.isOpened:
-                if ping(self.ip):
-                    self.open()
+                try: 
+                    if ping(self.ip):
+                        self.open()
+                        print('open device....')
+                except:
+                    QThread.msleep(200)
                 QThread.msleep(500)
                 continue
 
@@ -96,74 +109,93 @@ class MyThread(QThread):
                 ret, frame = self.GigECam.capture()
             else:
                 ret, frame = self.cap.read()
-
+            
             if not ret:
                 if self.isGigE:
-                    self.GigECam.end()
-                    
-                # else:
-                    # print('no frame')
+                    self.GigECam.end()                          
+                else:
+                    self.cap.release()
+                self.isOpened = False  
                 self.noframe.emit(self.id)
                 continue
 
             if not self.isGigE:
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                
-            height, width, channel = frame.shape
-            cv2.putText(frame, text, (width-50, height-int(50/2)), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 3, cv2.LINE_AA)
-            if self.id == 4:
+
+            height, width, channel = frame.shape    
+            if self.isGigE:
+                cv2.putText(frame, text, (width-50, height-int(50/2)), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 3, cv2.LINE_AA)
                 cv2.line(frame, (int(width/2)-25, int(height/2)), (int(width/2)+25, int(height/2)), (255, 0, 0), 5)
                 cv2.line(frame, (int(width/2), int(height/2)-25), (int(width/2), int(height/2)+25), (255, 0, 0), 5)
-            bytesPerLine = 3 * width
-            qImg = QImage(frame.data, width, height, bytesPerLine, QImage.Format_RGB888)
-            pixmap = QPixmap.fromImage(qImg)
+
+            pixmap = QPixmap.fromImage(QImage(frame.data, width, height, 3 * width, QImage.Format_RGB888))
             self.image.emit(pixmap, self.id)
+            QThread.msleep(30)
         
         if self.isGigE:
             self.GigECam.end()
-
+        else:
+            self.cap.release()
+        
         self.isOpened = False
-        self.cap.release()
         self.noframe.emit(self.id)
+        print('exit: ', self.id)
 
 
-class MyWidget(QWidget):
+class MainWindow(QWidget):
     def __init__(self, w, h):
         super().__init__()
         self.width = w
         self.height = h
+        self.local_IP = ''
         self.target_id = 0
         self.address = []
         self.ip = []
         self.monitors = []
         self.initUI()
         self.showFullScreen()
-        self.db = QSqlDatabase.addDatabase('QSQLITE')
-        
-        self.db.setDatabaseName('channel.db')
-        self.query = None
-        if not self.db.open():
-            print('db open fail')
-            QMessageBox.critical(None, ("Warning"), ("Can't create database conection"), QMessageBox.Cancel)
-        else:
-            self.query = QSqlQuery()
-            self.query.exec_("create table channel(id int primary key, name varchar(256))")
-            self.query.exec_("INSERT INTO channel VALUES(1, '')")
-            self.query.exec_("INSERT INTO channel VALUES(2, '')")
-            self.query.exec_("INSERT INTO channel VALUES(3, '')")
-            self.query.exec_("INSERT INTO channel VALUES(4, '')")
-            self.query.exec_("select id, name from channel")
-            while self.query.next():
-                str = self.query.value(1)
+        self.db = sql.connect('channel.db')
+        self.cursor = self.db.cursor()
+        try:
+            self.cursor.execute("create table channel(id int primary key, name varchar(256))")
+            self.cursor.execute("INSERT INTO channel VALUES(1, '')")
+            self.cursor.execute("INSERT INTO channel VALUES(2, '')")
+            self.cursor.execute("INSERT INTO channel VALUES(3, '')")
+            self.cursor.execute("INSERT INTO channel VALUES(4, '')")
+            self.cursor.execute("INSERT INTO channel VALUES(5, '')")
+        except Exception as err:
+            # c.execute("UPDATE channel set name = '192.168.1.1' where ID=5")
+            # conn.commit()
+            exc = self.cursor.execute("select id, name from channel")
+
+            for id, val in enumerate(exc):
+                print('id: ', val[0])
+                print('name: ', val[1])
+                str = val[1]
                 if str.find('GigE') > 0:
                     str = 'GigE'
-                self.address.append(str)
-                ip = re.findall(r'[0-9]+(?:\.[0-9]+){3}', self.query.value(1))
+                ip = re.findall(r'[0-9]+(?:\.[0-9]+){3}', val[1])
+                
                 if len(ip) != 0:
-                    self.ip.append(ip[0])
+                    if id == 4:
+                        self.setLocalIP(ip[0])
+                        break
+                    else:
+                        self.ip.append(ip[0])
                 else:
+                    if id == 4:
+                        break
                     self.ip.append(ip)
+                self.address.append(str)
+
+        print('address: ', self.address)
+        print('ip: ', self.ip)
         self.createThread()
+
+    def setLocalIP(self, ip):
+        self.local_IP = ip
+        cmd = 'ifconfig eth0 ' + self.local_IP + ' netmask 255.255.255.0'
+        os.system(cmd)
 
     def initUI(self):
         self.resize(self.width, self.height)
@@ -199,6 +231,7 @@ class MyWidget(QWidget):
             monitor.image.connect(self.setImage)
             monitor.noframe.connect(self.noFrame)
             self.monitors.append(monitor)
+            print("monitor: ", self.address[id])
             if len(ip) != 0:
                 monitor.start()
 
@@ -224,14 +257,22 @@ class MyWidget(QWidget):
         display.setStyleSheet("background-color:rgba(0, 0, 0, 255)")
         display.setPixmap(qImg.scaled(w, h, Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
-    def changeAddress(self, channels):
-        if len(channels):
+    def changeAddress(self, address, local_ip):
+        cmd = "UPDATE channel set name = ? where ID = ?"
+        if local_ip != self.local_IP:
+            ip = re.findall(r'[0-9]+(?:\.[0-9]+){3}', local_ip)
+            if len(ip) != 0:
+                self.setLocalIP(ip[0])
+                data=(local_ip, 5)
+                self.cursor.execute(cmd, data)
+                self.db.commit()
+
+        if len(address):
             ready_monitors = []
-            for id, value in enumerate(channels):
-                self.query.prepare("UPDATE channel SET name=:name where id=:id")
-                self.query.bindValue(":id", id+1)
-                self.query.bindValue(":name", value)
-                self.query.exec()
+            for id, value in enumerate(address):
+                data=(value, id+1)
+                self.cursor.execute(cmd, data)
+                self.db.commit()
                 ip = re.findall(r'[0-9]+(?:\.[0-9]+){3}', value)
                 if len(ip) != 0:
                     if self.address[id] != value:
@@ -249,7 +290,9 @@ class MyWidget(QWidget):
                 # monitor.open()
                 monitor.start()
                 
-            self.address = channels
+            self.address = address
+            print(self.address)
+            print(self.ip)
 
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_1:
@@ -264,23 +307,28 @@ class MyWidget(QWidget):
             self.images[0].show()
             self.isFocus = True
             self.target_id = 4
-        elif e.key() == Qt.Key_L:
+        elif e.key() == Qt.Key_O:
             self.images[0].hide()
             self.isFocus = False
             self.target_id = 0
         elif e.key() == Qt.Key_Space:
             self.db.close()
+            for monitor in self.monitors:
+                monitor.stop()
+                monitor.wait()
             QCoreApplication.quit()
         elif e.key() == Qt.Key_Q:
-            channel_edit = ChannelEdit(self.address)
+            print('address: ', self.address)
+            print('local ip: ', self.local_IP)
+            channel_edit = ChannelEdit(self.address, self.local_IP)
             channel_edit.exec()
-            ret = channel_edit.getResults()
-            self.changeAddress(ret)
+            address, local_ip = channel_edit.getResults()
+            self.changeAddress(address, local_ip)
         
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     screen_size = app.desktop().screenGeometry()
-    w = MyWidget(screen_size.width(), screen_size.height())
+    w = MainWindow(screen_size.width(), screen_size.height())
     w.show()
     sys.exit(app.exec_())
