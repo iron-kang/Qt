@@ -105,5 +105,6 @@ class PySpinCam:
     def release(self):
         self.cam.EndAcquisition()
         self.cam.DeInit()
+        del self.cam
         self.cam_list.Clear()
         self.system.ReleaseInstance()
