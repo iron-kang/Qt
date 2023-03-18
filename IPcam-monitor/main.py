@@ -1,8 +1,8 @@
 import sys, os, re
-from PyQt5.QtWidgets import (QApplication, QWidget, QGridLayout, QLabel)
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt, QCoreApplication, QThread
-from PyQt5 import QtCore
+from PySide6.QtWidgets import (QApplication, QWidget, QGridLayout, QLabel)
+from PySide6.QtGui import QFont
+from PySide6.QtCore import Qt, QCoreApplication, QThread
+from PySide6 import QtCore
 from channelEdit import ChannelEdit
 from captureThread import CaptureThread
 import sqlite3 as sql
@@ -29,12 +29,12 @@ class MainWindow(QWidget):
             self.cursor.execute("INSERT INTO channel VALUES(4, '')")
             self.cursor.execute("INSERT INTO channel VALUES(5, '')")
         except Exception as err:
-            print('sqlite except: ', err)
+            #print('sqlite except: ', err)
             exc = self.cursor.execute("select id, name from channel")
 
             for i, val in enumerate(exc):
-                print('id: ', val[0])
-                print('name: ', val[1])
+                #print('id: ', val[0])
+                #print('name: ', val[1])
                 str = val[1]
                 if str.find('GigE') > 0:
                     str = 'GigE'
@@ -52,8 +52,8 @@ class MainWindow(QWidget):
                     self.ip.append(ip)
                 self.address.append(str)
 
-        print('address: ', self.address)
-        print('ip: ', self.ip)
+        #print('address: ', self.address)
+        #print('ip: ', self.ip)
         self.createThread()
 
     def setLocalIP(self, ip):
@@ -134,7 +134,7 @@ class MainWindow(QWidget):
         if len(address):
             ready_monitors = []
             for i, value in enumerate(address):
-                data=(value, id+1)
+                data=(value, i+1)
                 self.cursor.execute(cmd, data)
                 self.db.commit()
                 ip = re.findall(r'[0-9]+(?:\.[0-9]+){3}', value)
@@ -186,7 +186,7 @@ class MainWindow(QWidget):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    screen_size = app.desktop().screenGeometry()
+    screen_size = app.instance().screens()[0].size()
     w = MainWindow(screen_size.width(), screen_size.height())
     w.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

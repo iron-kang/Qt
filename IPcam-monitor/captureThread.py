@@ -1,12 +1,12 @@
-from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtGui import QPixmap, QImage
+from PySide6.QtCore import QThread, Signal
+from PySide6.QtGui import QPixmap, QImage
 from ping3 import ping
-from PySpinCam import PySpinCam
+#from PySpinCam import PySpinCam
 import cv2
 
 class CaptureThread(QThread):
-    image = pyqtSignal(QPixmap, int)
-    noframe = pyqtSignal(int)
+    image = Signal(QPixmap, int)
+    noframe = Signal(int)
     def __init__(self, id, address, ip):
         super().__init__()
         self.id = id
@@ -45,9 +45,7 @@ class CaptureThread(QThread):
         else:
             print('rtsp init: ', self.address)
             self.cap.open(self.address)
-            print('rtsp open...')
             self.isOpened = self.cap.isOpened()
-            print('rtsp init finish')
 
 
     def stop(self):
@@ -57,13 +55,13 @@ class CaptureThread(QThread):
         text = self.id.__str__()
         self.run = True
         
-        print('run: ', self.address, self.id)
+        #print('run: ', self.address, self.id)
         while self.run:
             if not self.isOpened:
                 try: 
                     if ping(self.ip):
                         self.open()
-                        print('open device....')
+                        #print('open device....')
                 except:
                     QThread.msleep(200)
                 QThread.msleep(500)
@@ -103,4 +101,3 @@ class CaptureThread(QThread):
         
         self.isOpened = False
         self.noframe.emit(self.id)
-        print('exit: ', self.id)
